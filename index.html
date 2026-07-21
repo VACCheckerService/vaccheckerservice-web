@@ -189,7 +189,7 @@
   .terminal-bar span{ width:9px; height:9px; border-radius:50%; background:#2a3644; }
   .terminal-bar .label{ margin-left:8px; color:var(--muted); font-size:11px; letter-spacing:0.5px; width:auto; height:auto; border-radius:0; background:none; }
 
-  .terminal-body{ padding:20px 22px; min-height:340px; }
+  .terminal-body{ padding:20px 22px; min-height:340px; max-height:480px; overflow-y:auto; }
 
   .scan-line{
     display:flex; gap:10px; padding:4px 0; color:var(--muted);
@@ -292,7 +292,7 @@
       <a href="mailto:vacchecker@proton.me" class="contact-mail">
         <span class="mail-dot"></span> vacchecker@proton.me
       </a>
-      <a href="https://github.com/VACCheckerService" target="_blank" rel="noopener" class="contact-mail" style="color:var(--muted); border-color:var(--panel-line); background:rgba(255,255,255,0.02);">
+      <a href="https://github.com/VACCheckerService/vaccheckerservice-web" target="_blank" rel="noopener" class="contact-mail" style="color:var(--muted); border-color:var(--panel-line); background:rgba(255,255,255,0.02);">
         <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
         <span data-i18n="githubLabel">GitHub</span>
       </a>
@@ -316,7 +316,7 @@
     </p>
     <div class="hero-ctas">
       <a href="#report" class="btn btn-primary" data-i18n="cta1">Verdachtsfall melden →</a>
-      <a href="#scan" class="btn btn-ghost" data-i18n="cta2">Wie die Analyse abläuft</a>
+      <a href="#scan" id="ctaScan" class="btn btn-ghost" data-i18n="cta2">Wie die Analyse abläuft</a>
     </div>
   </div>
 </section>
@@ -420,7 +420,7 @@
   <div class="footer-inner">
     <div data-i18n="footerLeft">© VACCheckerService — Community Anti-Cheat Analysis</div>
     <div style="display:flex; align-items:center; gap:18px;">
-      <a href="https://github.com/VACCheckerService" target="_blank" rel="noopener" style="color:#5b6b80; text-decoration:none;">github.com/VACCheckerService</a>
+      <a href="https://github.com/VACCheckerService/vaccheckerservice-web" target="_blank" rel="noopener" style="color:#5b6b80; text-decoration:none;">github.com/VACCheckerService/vaccheckerservice-web</a>
       <span><span data-i18n="footerStatus">STATUS:</span> <span style="color:var(--red)">ACTIVE</span></span>
     </div>
   </div>
@@ -470,17 +470,25 @@
       footerLeft: "© VACCheckerService — Community Anti-Cheat Analysis",
       footerStatus: "STATUS:",
       scanEntries: [
+        { phase: '▸ PHASE 1 — STEAM-PROFIL-ANALYTIK' },
         { id: '76561199084098166', name: 'denik', action: 'Steam-Profil laden', status: 'check' },
-        { id: '76561199084098166', name: 'denik', action: 'Kontostatus abfragen', status: 'clean' },
-        { id: '76561199084098166', name: 'denik', action: 'Freundesliste analysieren', status: 'clean' },
-        { id: '76561198317714146', name: 'TheSystem', action: 'Gruppenmitgliedschaften abgleichen', status: 'clean' },
-        { id: '76561198317714146', name: 'TheSystem', action: 'SteamID.uk Verlauf abrufen', status: 'check' },
-        { id: '76561198317714146', name: 'TheSystem', action: 'Historische Freundesliste prüfen', status: 'clean' },
+        { id: '76561199084098166', name: 'denik', action: 'Kontoalter & Sichtbarkeit prüfen', status: 'clean' },
+        { id: '76561199084098166', name: 'denik', action: 'Ban-Historie abfragen', status: 'clean' },
+        { phase: '▸ PHASE 2 — FREUNDESLISTEN-ANALYTIK' },
+        { id: '76561198317714146', name: 'TheSystem', action: 'Freundesliste auslesen', status: 'check' },
+        { id: '76561198317714146', name: 'TheSystem', action: 'Historische Freundesliste rekonstruieren', status: 'clean' },
+        { id: '76561198317714146', name: 'TheSystem', action: 'Überschneidungen mit Verdachtsprofil prüfen', status: 'clean' },
+        { phase: '▸ PHASE 3 — GRUPPEN-FETCHING' },
+        { id: '76561198317714146', name: 'TheSystem', action: 'Gruppenmitgliedschaften abrufen', status: 'check' },
+        { id: '76561198317714146', name: 'TheSystem', action: 'Gruppe "Nutten" auf Auffälligkeiten prüfen', status: 'clean' },
+        { phase: '▸ PHASE 4 — STEAMID.UK-ABFRAGE' },
+        { id: '76561199029211252', name: 'dennyE', action: 'fetching https://steamid.uk/profile/76561199029211252', status: 'check' },
         { id: '76561199029211252', name: 'dennyE', action: 'Namens-Historie abrufen', status: 'check' },
         { id: '76561199029211252', name: 'dennyE', action: 'Avatar-Historie abgleichen', status: 'ban', flag: 'Avatar-Match mit "denik" → BANNUMGEHUNG' },
+        { phase: '▸ PHASE 5 — ZWEITER FALL: GUSTELPUTSCH' },
         { id: '76561198417369910', name: 'gustelputsch', action: 'Steam-Profil laden', status: 'clean' },
         { id: '76561198417369910', name: 'gustelputsch', action: 'Anzeigename-Abgleich', status: 'check' },
-        { id: '76561199157276802', name: 'gustelputsch', action: 'SteamID.uk Netzwerk-Check', status: 'ban', flag: 'Identischer Anzeigename → BANNUMGEHUNG' },
+        { id: '76561199157276802', name: 'gustelputsch', action: 'fetching https://steamid.uk/profile/76561199157276802', status: 'ban', flag: 'Identischer Anzeigename → BANNUMGEHUNG' },
         { id: '76561199029873407', name: 'Maxellputsch', action: 'Wortendungs-Abgleich "-putsch"', status: 'ban', flag: 'Zugehörig zum Account-Netzwerk' },
       ],
     },
@@ -526,17 +534,25 @@
       footerLeft: "© VACCheckerService — Community Anti-Cheat Analysis",
       footerStatus: "STATUS:",
       scanEntries: [
+        { phase: '▸ PHASE 1 — STEAM PROFILE ANALYTICS' },
         { id: '76561199084098166', name: 'denik', action: 'loading Steam profile', status: 'check' },
-        { id: '76561199084098166', name: 'denik', action: 'checking account status', status: 'clean' },
-        { id: '76561199084098166', name: 'denik', action: 'analyzing friend list', status: 'clean' },
-        { id: '76561198317714146', name: 'TheSystem', action: 'cross-checking group memberships', status: 'clean' },
-        { id: '76561198317714146', name: 'TheSystem', action: 'fetching SteamID.uk history', status: 'check' },
-        { id: '76561198317714146', name: 'TheSystem', action: 'checking historical friend list', status: 'clean' },
+        { id: '76561199084098166', name: 'denik', action: 'checking account age & visibility', status: 'clean' },
+        { id: '76561199084098166', name: 'denik', action: 'querying ban history', status: 'clean' },
+        { phase: '▸ PHASE 2 — FRIEND LIST ANALYTICS' },
+        { id: '76561198317714146', name: 'TheSystem', action: 'reading friend list', status: 'check' },
+        { id: '76561198317714146', name: 'TheSystem', action: 'reconstructing historical friend list', status: 'clean' },
+        { id: '76561198317714146', name: 'TheSystem', action: 'checking overlap with suspected profile', status: 'clean' },
+        { phase: '▸ PHASE 3 — GROUP FETCHING' },
+        { id: '76561198317714146', name: 'TheSystem', action: 'fetching group memberships', status: 'check' },
+        { id: '76561198317714146', name: 'TheSystem', action: 'checking group "Nutten" for anomalies', status: 'clean' },
+        { phase: '▸ PHASE 4 — STEAMID.UK LOOKUP' },
+        { id: '76561199029211252', name: 'dennyE', action: 'fetching https://steamid.uk/profile/76561199029211252', status: 'check' },
         { id: '76561199029211252', name: 'dennyE', action: 'fetching name history', status: 'check' },
         { id: '76561199029211252', name: 'dennyE', action: 'matching avatar history', status: 'ban', flag: 'avatar match with "denik" → BAN EVASION' },
+        { phase: '▸ PHASE 5 — SECOND CASE: GUSTELPUTSCH' },
         { id: '76561198417369910', name: 'gustelputsch', action: 'loading Steam profile', status: 'clean' },
         { id: '76561198417369910', name: 'gustelputsch', action: 'display name match', status: 'check' },
-        { id: '76561199157276802', name: 'gustelputsch', action: 'SteamID.uk network check', status: 'ban', flag: 'identical display name → BAN EVASION' },
+        { id: '76561199157276802', name: 'gustelputsch', action: 'fetching https://steamid.uk/profile/76561199157276802', status: 'ban', flag: 'identical display name → BAN EVASION' },
         { id: '76561199029873407', name: 'Maxellputsch', action: 'suffix match "-putsch"', status: 'ban', flag: 'linked to account network' },
       ],
     }
@@ -568,30 +584,40 @@
 
   const body = document.getElementById('terminalBody');
   let scanTimeouts = [];
+  let loopTimeout = null;
 
   function runScan(lang){
     scanTimeouts.forEach(t => clearTimeout(t));
+    if(loopTimeout) clearTimeout(loopTimeout);
     scanTimeouts = [];
     body.innerHTML = '';
     const entries = i18n[lang].scanEntries;
-    const statusLabel = {
-      clean: lang === 'de' ? 'CLEAN' : 'CLEAN',
-      ban: lang === 'de' ? 'VAC BANNED' : 'VAC BANNED',
-      check: lang === 'de' ? 'PRÜFE...' : 'CHECKING...'
-    };
+    const statusLabel = { clean: 'CLEAN', ban: 'VAC BANNED', check: lang === 'de' ? 'PRÜFE...' : 'CHECKING...' };
 
-    entries.forEach((entry, idx) => {
+    let delay = 0;
+    entries.forEach((entry) => {
+      const stepDelay = entry.phase ? 420 : 480;
       const t = setTimeout(() => {
         const row = document.createElement('div');
-        row.className = 'scan-line' + (entry.status === 'ban' ? ' flagged' : '');
-        let statusHtml;
-        if(entry.status === 'clean') statusHtml = `<span class="status-clean">${statusLabel.clean}</span>`;
-        else if(entry.status === 'ban') statusHtml = `<span class="status-ban">${statusLabel.ban}</span>`;
-        else statusHtml = `<span class="status-check">${statusLabel.check}</span>`;
-        row.innerHTML = `<span class="id">[${entry.id}]</span> <span class="tag">${entry.name}</span> — ${entry.action} → ${statusHtml}${entry.flag ? ' — ' + entry.flag : ''}`;
+        if(entry.phase){
+          row.className = 'scan-line section-gap';
+          row.style.color = 'var(--blue)';
+          row.style.fontWeight = '700';
+          row.style.marginTop = '14px';
+          row.textContent = entry.phase;
+        } else {
+          row.className = 'scan-line' + (entry.status === 'ban' ? ' flagged' : '');
+          let statusHtml;
+          if(entry.status === 'clean') statusHtml = `<span class="status-clean">${statusLabel.clean}</span>`;
+          else if(entry.status === 'ban') statusHtml = `<span class="status-ban">${statusLabel.ban}</span>`;
+          else statusHtml = `<span class="status-check">${statusLabel.check}</span>`;
+          row.innerHTML = `<span class="id">[${entry.id}]</span> <span class="tag">${entry.name}</span> — ${entry.action} → ${statusHtml}${entry.flag ? ' — ' + entry.flag : ''}`;
+        }
         body.appendChild(row);
-      }, idx * 550);
+        body.scrollTop = body.scrollHeight;
+      }, delay);
       scanTimeouts.push(t);
+      delay += stepDelay;
     });
 
     const cursorT = setTimeout(() => {
@@ -599,11 +625,18 @@
       cursorRow.className = 'cursor-row';
       cursorRow.innerHTML = (lang === 'de' ? 'scanne nächsten Batch' : 'scanning next batch') + ' <span class="cursor"></span>';
       body.appendChild(cursorRow);
-    }, entries.length * 550 + 300);
+    }, delay + 300);
     scanTimeouts.push(cursorT);
+
+    loopTimeout = setTimeout(() => runScan(lang), delay + 3500);
   }
 
+
   applyLang('de');
+
+  document.getElementById('ctaScan').addEventListener('click', () => {
+    runScan(currentLang);
+  });
 
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(e => {

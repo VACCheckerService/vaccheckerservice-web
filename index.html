@@ -193,7 +193,7 @@
 
   .scan-line{
     display:flex; gap:10px; padding:4px 0; color:var(--muted);
-    opacity:0; animation:fadeIn 0.4s forwards;
+    opacity:0; animation:fadeIn 0.6s forwards;
     white-space:nowrap; overflow:hidden;
   }
   .scan-line .id{ color:#5b6b80; }
@@ -471,25 +471,25 @@
       footerStatus: "STATUS:",
       scanEntries: [
         { phase: '▸ PHASE 1 — STEAM-PROFIL-ANALYTIK' },
-        { id: '76561199084098166', name: 'denik', action: 'Steam-Profil laden', status: 'check' },
-        { id: '76561199084098166', name: 'denik', action: 'Kontoalter & Sichtbarkeit prüfen', status: 'clean' },
-        { id: '76561199084098166', name: 'denik', action: 'Ban-Historie abfragen', status: 'clean' },
+        { id: '76561199512847360', name: 'SUSPECT_1', action: 'Steam-Profil laden', status: 'check' },
+        { id: '76561199512847360', name: 'SUSPECT_1', action: 'Kontoalter & Sichtbarkeit prüfen', status: 'clean' },
+        { id: '76561199512847360', name: 'SUSPECT_1', action: 'Ban-Historie abfragen', status: 'clean' },
         { phase: '▸ PHASE 2 — FREUNDESLISTEN-ANALYTIK' },
-        { id: '76561198317714146', name: 'TheSystem', action: 'Freundesliste auslesen', status: 'check' },
-        { id: '76561198317714146', name: 'TheSystem', action: 'Historische Freundesliste rekonstruieren', status: 'clean' },
-        { id: '76561198317714146', name: 'TheSystem', action: 'Überschneidungen mit Verdachtsprofil prüfen', status: 'clean' },
+        { id: '76561198734120558', name: 'SAMPLE_2', action: 'Freundesliste auslesen', status: 'check' },
+        { id: '76561198734120558', name: 'SAMPLE_2', action: 'Historische Freundesliste rekonstruieren', status: 'clean' },
+        { id: '76561198734120558', name: 'SAMPLE_2', action: 'Überschneidungen mit Verdachtsprofil prüfen', status: 'clean' },
         { phase: '▸ PHASE 3 — GRUPPEN-FETCHING' },
-        { id: '76561198317714146', name: 'TheSystem', action: 'Gruppenmitgliedschaften abrufen', status: 'check' },
-        { id: '76561198317714146', name: 'TheSystem', action: 'Gruppe "Nutten" auf Auffälligkeiten prüfen', status: 'clean' },
+        { id: '76561198734120558', name: 'SAMPLE_2', action: 'Gruppenmitgliedschaften abrufen', status: 'check' },
+        { id: '76561198734120558', name: 'SAMPLE_2', action: 'exklusive Gruppe auf Auffälligkeiten prüfen', status: 'clean' },
         { phase: '▸ PHASE 4 — STEAMID.UK-ABFRAGE' },
-        { id: '76561199029211252', name: 'dennyE', action: 'fetching https://steamid.uk/profile/76561199029211252', status: 'check' },
-        { id: '76561199029211252', name: 'dennyE', action: 'Namens-Historie abrufen', status: 'check' },
-        { id: '76561199029211252', name: 'dennyE', action: 'Avatar-Historie abgleichen', status: 'ban', flag: 'Avatar-Match mit "denik" → BANNUMGEHUNG' },
-        { phase: '▸ PHASE 5 — ZWEITER FALL: GUSTELPUTSCH' },
-        { id: '76561198417369910', name: 'gustelputsch', action: 'Steam-Profil laden', status: 'clean' },
-        { id: '76561198417369910', name: 'gustelputsch', action: 'Anzeigename-Abgleich', status: 'check' },
-        { id: '76561199157276802', name: 'gustelputsch', action: 'fetching https://steamid.uk/profile/76561199157276802', status: 'ban', flag: 'Identischer Anzeigename → BANNUMGEHUNG' },
-        { id: '76561199029873407', name: 'Maxellputsch', action: 'Wortendungs-Abgleich "-putsch"', status: 'ban', flag: 'Zugehörig zum Account-Netzwerk' },
+        { id: '76561199048291637', name: 'SUSPECT_3', action: 'fetching https://steamid.uk/profile/76561199048291637', status: 'check' },
+        { id: '76561199048291637', name: 'SUSPECT_3', action: 'Namens-Historie abrufen', status: 'check' },
+        { id: '76561199048291637', name: 'SUSPECT_3', action: 'Avatar-Historie abgleichen', status: 'ban', flag: 'Avatar-Match mit "SUSPECT_1" → BANNUMGEHUNG' },
+        { phase: '▸ PHASE 5 — ZWEITER FALL: SAMPLE_4' },
+        { id: '76561199267840115', name: 'SAMPLE_4', action: 'Steam-Profil laden', status: 'clean' },
+        { id: '76561199267840115', name: 'SAMPLE_4', action: 'Anzeigename-Abgleich', status: 'check' },
+        { id: '76561199384710926', name: 'SAMPLE_4', action: 'fetching https://steamid.uk/profile/76561199384710926', status: 'ban', flag: 'Identischer Anzeigename → BANNUMGEHUNG' },
+        { id: '76561199601528473', name: 'SUSPECT_5', action: 'Namens-Abgleich', status: 'ban', flag: 'Zugehörig zum Account-Netzwerk' },
       ],
     },
     en: {
@@ -535,25 +535,25 @@
       footerStatus: "STATUS:",
       scanEntries: [
         { phase: '▸ PHASE 1 — STEAM PROFILE ANALYTICS' },
-        { id: '76561199084098166', name: 'denik', action: 'loading Steam profile', status: 'check' },
-        { id: '76561199084098166', name: 'denik', action: 'checking account age & visibility', status: 'clean' },
-        { id: '76561199084098166', name: 'denik', action: 'querying ban history', status: 'clean' },
+        { id: '76561199512847360', name: 'SUSPECT_1', action: 'loading Steam profile', status: 'check' },
+        { id: '76561199512847360', name: 'SUSPECT_1', action: 'checking account age & visibility', status: 'clean' },
+        { id: '76561199512847360', name: 'SUSPECT_1', action: 'querying ban history', status: 'clean' },
         { phase: '▸ PHASE 2 — FRIEND LIST ANALYTICS' },
-        { id: '76561198317714146', name: 'TheSystem', action: 'reading friend list', status: 'check' },
-        { id: '76561198317714146', name: 'TheSystem', action: 'reconstructing historical friend list', status: 'clean' },
-        { id: '76561198317714146', name: 'TheSystem', action: 'checking overlap with suspected profile', status: 'clean' },
+        { id: '76561198734120558', name: 'SAMPLE_2', action: 'reading friend list', status: 'check' },
+        { id: '76561198734120558', name: 'SAMPLE_2', action: 'reconstructing historical friend list', status: 'clean' },
+        { id: '76561198734120558', name: 'SAMPLE_2', action: 'checking overlap with suspected profile', status: 'clean' },
         { phase: '▸ PHASE 3 — GROUP FETCHING' },
-        { id: '76561198317714146', name: 'TheSystem', action: 'fetching group memberships', status: 'check' },
-        { id: '76561198317714146', name: 'TheSystem', action: 'checking group "Nutten" for anomalies', status: 'clean' },
+        { id: '76561198734120558', name: 'SAMPLE_2', action: 'fetching group memberships', status: 'check' },
+        { id: '76561198734120558', name: 'SAMPLE_2', action: 'checking exclusive group for anomalies', status: 'clean' },
         { phase: '▸ PHASE 4 — STEAMID.UK LOOKUP' },
-        { id: '76561199029211252', name: 'dennyE', action: 'fetching https://steamid.uk/profile/76561199029211252', status: 'check' },
-        { id: '76561199029211252', name: 'dennyE', action: 'fetching name history', status: 'check' },
-        { id: '76561199029211252', name: 'dennyE', action: 'matching avatar history', status: 'ban', flag: 'avatar match with "denik" → BAN EVASION' },
-        { phase: '▸ PHASE 5 — SECOND CASE: GUSTELPUTSCH' },
-        { id: '76561198417369910', name: 'gustelputsch', action: 'loading Steam profile', status: 'clean' },
-        { id: '76561198417369910', name: 'gustelputsch', action: 'display name match', status: 'check' },
-        { id: '76561199157276802', name: 'gustelputsch', action: 'fetching https://steamid.uk/profile/76561199157276802', status: 'ban', flag: 'identical display name → BAN EVASION' },
-        { id: '76561199029873407', name: 'Maxellputsch', action: 'suffix match "-putsch"', status: 'ban', flag: 'linked to account network' },
+        { id: '76561199048291637', name: 'SUSPECT_3', action: 'fetching https://steamid.uk/profile/76561199048291637', status: 'check' },
+        { id: '76561199048291637', name: 'SUSPECT_3', action: 'fetching name history', status: 'check' },
+        { id: '76561199048291637', name: 'SUSPECT_3', action: 'matching avatar history', status: 'ban', flag: 'avatar match with "SUSPECT_1" → BAN EVASION' },
+        { phase: '▸ PHASE 5 — SECOND CASE: SAMPLE_4' },
+        { id: '76561199267840115', name: 'SAMPLE_4', action: 'loading Steam profile', status: 'clean' },
+        { id: '76561199267840115', name: 'SAMPLE_4', action: 'display name match', status: 'check' },
+        { id: '76561199384710926', name: 'SAMPLE_4', action: 'fetching https://steamid.uk/profile/76561199384710926', status: 'ban', flag: 'identical display name → BAN EVASION' },
+        { id: '76561199601528473', name: 'SUSPECT_5', action: 'name match', status: 'ban', flag: 'linked to account network' },
       ],
     }
   };
@@ -596,7 +596,7 @@
 
     let delay = 0;
     entries.forEach((entry) => {
-      const stepDelay = entry.phase ? 420 : 480;
+      const stepDelay = entry.phase ? 750 : 950;
       const t = setTimeout(() => {
         const row = document.createElement('div');
         if(entry.phase){
@@ -625,10 +625,10 @@
       cursorRow.className = 'cursor-row';
       cursorRow.innerHTML = (lang === 'de' ? 'scanne nächsten Batch' : 'scanning next batch') + ' <span class="cursor"></span>';
       body.appendChild(cursorRow);
-    }, delay + 300);
+    }, delay + 600);
     scanTimeouts.push(cursorT);
 
-    loopTimeout = setTimeout(() => runScan(lang), delay + 3500);
+    loopTimeout = setTimeout(() => runScan(lang), delay + 5000);
   }
 
 

@@ -54,7 +54,7 @@
   header{
     border-bottom:1px solid var(--panel-line);
     background:linear-gradient(180deg, rgba(13,21,32,0.8), rgba(13,21,32,0.3));
-    position:sticky; top:0; backdrop-filter:blur(6px); z-index:10;
+    position:static;
   }
 
   .header-inner{
@@ -471,13 +471,17 @@
       footerStatus: "STATUS:",
       scanEntries: [
         { id: '76561199084098166', name: 'denik', action: 'Steam-Profil laden', status: 'check' },
+        { id: '76561199084098166', name: 'denik', action: 'Kontostatus abfragen', status: 'clean' },
         { id: '76561199084098166', name: 'denik', action: 'Freundesliste analysieren', status: 'clean' },
         { id: '76561198317714146', name: 'TheSystem', action: 'Gruppenmitgliedschaften abgleichen', status: 'clean' },
         { id: '76561198317714146', name: 'TheSystem', action: 'SteamID.uk Verlauf abrufen', status: 'check' },
+        { id: '76561198317714146', name: 'TheSystem', action: 'Historische Freundesliste prüfen', status: 'clean' },
+        { id: '76561199029211252', name: 'dennyE', action: 'Namens-Historie abrufen', status: 'check' },
         { id: '76561199029211252', name: 'dennyE', action: 'Avatar-Historie abgleichen', status: 'ban', flag: 'Avatar-Match mit "denik" → BANNUMGEHUNG' },
         { id: '76561198417369910', name: 'gustelputsch', action: 'Steam-Profil laden', status: 'clean' },
-        { id: '76561199157276802', name: 'gustelputsch', action: 'Anzeigename-Abgleich', status: 'ban', flag: 'Identischer Anzeigename → BANNUMGEHUNG' },
-        { id: '76561199029873407', name: 'Maxellputsch', action: 'SteamID.uk Netzwerk-Check', status: 'clean' },
+        { id: '76561198417369910', name: 'gustelputsch', action: 'Anzeigename-Abgleich', status: 'check' },
+        { id: '76561199157276802', name: 'gustelputsch', action: 'SteamID.uk Netzwerk-Check', status: 'ban', flag: 'Identischer Anzeigename → BANNUMGEHUNG' },
+        { id: '76561199029873407', name: 'Maxellputsch', action: 'Wortendungs-Abgleich "-putsch"', status: 'ban', flag: 'Zugehörig zum Account-Netzwerk' },
       ],
     },
     en: {
@@ -523,13 +527,17 @@
       footerStatus: "STATUS:",
       scanEntries: [
         { id: '76561199084098166', name: 'denik', action: 'loading Steam profile', status: 'check' },
+        { id: '76561199084098166', name: 'denik', action: 'checking account status', status: 'clean' },
         { id: '76561199084098166', name: 'denik', action: 'analyzing friend list', status: 'clean' },
         { id: '76561198317714146', name: 'TheSystem', action: 'cross-checking group memberships', status: 'clean' },
         { id: '76561198317714146', name: 'TheSystem', action: 'fetching SteamID.uk history', status: 'check' },
+        { id: '76561198317714146', name: 'TheSystem', action: 'checking historical friend list', status: 'clean' },
+        { id: '76561199029211252', name: 'dennyE', action: 'fetching name history', status: 'check' },
         { id: '76561199029211252', name: 'dennyE', action: 'matching avatar history', status: 'ban', flag: 'avatar match with "denik" → BAN EVASION' },
         { id: '76561198417369910', name: 'gustelputsch', action: 'loading Steam profile', status: 'clean' },
-        { id: '76561199157276802', name: 'gustelputsch', action: 'display name match', status: 'ban', flag: 'identical display name → BAN EVASION' },
-        { id: '76561199029873407', name: 'Maxellputsch', action: 'SteamID.uk network check', status: 'clean' },
+        { id: '76561198417369910', name: 'gustelputsch', action: 'display name match', status: 'check' },
+        { id: '76561199157276802', name: 'gustelputsch', action: 'SteamID.uk network check', status: 'ban', flag: 'identical display name → BAN EVASION' },
+        { id: '76561199029873407', name: 'Maxellputsch', action: 'suffix match "-putsch"', status: 'ban', flag: 'linked to account network' },
       ],
     }
   };
@@ -596,6 +604,15 @@
   }
 
   applyLang('de');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if(e.isIntersecting){
+        runScan(currentLang);
+      }
+    });
+  }, { threshold: 0.4 });
+  observer.observe(document.querySelector('.terminal'));
 </script>
 
 </body>

@@ -22,7 +22,6 @@
   }
 
   *{ margin:0; padding:0; box-sizing:border-box; }
-
   html{ scroll-behavior:smooth; }
 
   body{
@@ -35,432 +34,250 @@
 
   body::before{
     content:"";
-    position:fixed;
-    inset:0;
+    position:fixed; inset:0;
     background:
       radial-gradient(ellipse at 20% -10%, rgba(59,130,246,0.10), transparent 45%),
       radial-gradient(ellipse at 90% 10%, rgba(239,68,68,0.08), transparent 40%);
-    pointer-events:none;
-    z-index:0;
+    pointer-events:none; z-index:0;
   }
-
-  /* scanline texture */
   body::after{
     content:"";
-    position:fixed;
-    inset:0;
-    background:repeating-linear-gradient(
-      to bottom,
-      rgba(255,255,255,0.012) 0px,
-      rgba(255,255,255,0.012) 1px,
-      transparent 1px,
-      transparent 3px
-    );
-    pointer-events:none;
-    z-index:1;
-    opacity:0.5;
+    position:fixed; inset:0;
+    background:repeating-linear-gradient(to bottom, rgba(255,255,255,0.012) 0px, rgba(255,255,255,0.012) 1px, transparent 1px, transparent 3px);
+    pointer-events:none; z-index:1; opacity:0.5;
   }
 
   a{ color:inherit; }
-
   .wrap{ max-width:920px; margin:0 auto; padding:0 24px; position:relative; z-index:2; }
 
   /* ===== HEADER ===== */
   header{
     border-bottom:1px solid var(--panel-line);
     background:linear-gradient(180deg, rgba(13,21,32,0.8), rgba(13,21,32,0.3));
+    position:sticky; top:0; backdrop-filter:blur(6px); z-index:10;
   }
 
   .header-inner{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:20px 24px;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 24px; gap:16px; flex-wrap:wrap;
   }
 
-  .brand{
-    display:flex;
-    align-items:center;
-    gap:12px;
-    font-family:var(--mono);
-    font-weight:800;
-    font-size:17px;
-    letter-spacing:0.5px;
-  }
+  .brand{ display:flex; align-items:center; gap:12px; font-family:var(--mono); font-weight:800; font-size:17px; letter-spacing:0.5px; }
 
   .brand-mark{
-    width:34px; height:34px;
+    width:38px; height:38px; border-radius:50%;
     border:1.5px solid var(--blue);
-    display:flex; align-items:center; justify-content:center;
+    overflow:hidden;
+    flex-shrink:0;
     position:relative;
-    color:var(--blue);
-    font-size:15px;
   }
+  .brand-mark img{ width:100%; height:100%; object-fit:cover; display:block; }
   .brand-mark::after{
+    content:""; position:absolute; inset:-4px;
+    border:1px solid rgba(59,130,246,0.25); border-radius:50%;
+  }
+
+  .header-right{ display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
+
+  .contact-mail{
+    font-family:var(--mono); font-size:12.5px; color:var(--blue);
+    display:flex; align-items:center; gap:8px;
+    border:1px solid rgba(59,130,246,0.3);
+    padding:7px 12px;
+    background:rgba(59,130,246,0.06);
+    text-decoration:none;
+    position:relative;
+    overflow:hidden;
+  }
+  .contact-mail .mail-dot{
+    width:6px; height:6px; border-radius:50%;
+    background:var(--blue);
+    box-shadow:0 0 6px rgba(59,130,246,0.6);
+    animation:pulse 1.8s infinite;
+    flex-shrink:0;
+  }
+  .contact-mail::before{
     content:"";
-    position:absolute;
-    inset:-4px;
-    border:1px solid rgba(59,130,246,0.25);
+    position:absolute; top:0; left:-100%;
+    width:60%; height:100%;
+    background:linear-gradient(90deg, transparent, rgba(59,130,246,0.18), transparent);
+    animation:sweep 3.2s infinite;
+  }
+  @keyframes sweep{
+    0%{ left:-60%; }
+    100%{ left:120%; }
   }
 
   .live-pill{
-    display:flex;
-    align-items:center;
-    gap:8px;
-    font-family:var(--mono);
-    font-size:12px;
-    color:var(--red);
+    display:flex; align-items:center; gap:8px;
+    font-family:var(--mono); font-size:12px; color:var(--red);
     letter-spacing:0.5px;
     border:1px solid rgba(239,68,68,0.3);
     padding:6px 12px;
     background:rgba(239,68,68,0.06);
   }
-
   .live-dot{
-    width:7px; height:7px;
-    border-radius:50%;
+    width:7px; height:7px; border-radius:50%;
     background:var(--red);
     box-shadow:0 0 8px var(--red-glow);
     animation:pulse 1.6s infinite;
   }
+  @keyframes pulse{ 0%,100%{ opacity:1; } 50%{ opacity:0.3; } }
 
-  @keyframes pulse{
-    0%,100%{ opacity:1; }
-    50%{ opacity:0.3; }
+  .lang-switch{
+    display:flex; font-family:var(--mono); font-size:12px; letter-spacing:0.5px;
+    border:1px solid var(--panel-line); overflow:hidden;
   }
+  .lang-switch button{
+    background:transparent; border:none; color:var(--muted);
+    padding:7px 12px; cursor:pointer; font-family:var(--mono); font-size:12px;
+    transition:background 0.2s, color 0.2s;
+  }
+  .lang-switch button.active{ background:var(--blue); color:#05070a; font-weight:700; }
+  .lang-switch button:not(.active):hover{ color:var(--text); }
 
   /* ===== HERO ===== */
-  .hero{
-    padding:90px 0 70px;
-    border-bottom:1px solid var(--panel-line);
-  }
+  .hero{ padding:90px 0 70px; border-bottom:1px solid var(--panel-line); }
 
   .eyebrow{
-    font-family:var(--mono);
-    font-size:12px;
-    color:var(--muted);
-    letter-spacing:2px;
-    text-transform:uppercase;
-    margin-bottom:22px;
-    display:flex;
-    align-items:center;
-    gap:10px;
+    font-family:var(--mono); font-size:12px; color:var(--muted);
+    letter-spacing:2px; text-transform:uppercase; margin-bottom:22px;
+    display:flex; align-items:center; gap:10px;
   }
-  .eyebrow::before{
-    content:"";
-    width:24px; height:1px;
-    background:var(--red);
-  }
+  .eyebrow::before{ content:""; width:24px; height:1px; background:var(--red); }
 
   h1{
-    font-family:var(--mono);
-    font-weight:800;
+    font-family:var(--mono); font-weight:800;
     font-size:clamp(32px, 5.5vw, 54px);
-    line-height:1.08;
-    letter-spacing:-0.5px;
-    max-width:14ch;
+    line-height:1.08; letter-spacing:-0.5px; max-width:16ch;
   }
   h1 .accent{ color:var(--red); }
 
-  .hero-sub{
-    margin-top:26px;
-    max-width:52ch;
-    color:var(--muted);
-    font-size:16px;
-  }
-
+  .hero-sub{ margin-top:26px; max-width:56ch; color:var(--muted); font-size:16px; }
   .hero-sub strong{ color:var(--text); font-weight:600; }
 
-  .hero-ctas{
-    margin-top:36px;
-    display:flex;
-    gap:16px;
-    flex-wrap:wrap;
-  }
+  .hero-ctas{ margin-top:36px; display:flex; gap:16px; flex-wrap:wrap; }
 
   .btn{
-    font-family:var(--mono);
-    font-size:13px;
-    letter-spacing:0.5px;
-    padding:13px 22px;
-    border:1px solid var(--panel-line);
-    cursor:pointer;
-    text-decoration:none;
-    display:inline-flex;
-    align-items:center;
-    gap:8px;
+    font-family:var(--mono); font-size:13px; letter-spacing:0.5px;
+    padding:13px 22px; border:1px solid var(--panel-line);
+    cursor:pointer; text-decoration:none;
+    display:inline-flex; align-items:center; gap:8px;
     transition:border-color 0.2s, background 0.2s;
+    background:none;
   }
-  .btn-primary{
-    background:var(--red);
-    border-color:var(--red);
-    color:#05070a;
-    font-weight:700;
-  }
+  .btn-primary{ background:var(--red); border-color:var(--red); color:#05070a; font-weight:700; }
   .btn-primary:hover{ background:#ff5c5c; border-color:#ff5c5c; }
   .btn-ghost{ color:var(--muted); }
   .btn-ghost:hover{ border-color:var(--blue); color:var(--text); }
 
-  /* ===== SCAN LOG (SIGNATURE ELEMENT) ===== */
-  .scan-section{
-    padding:64px 0;
-    border-bottom:1px solid var(--panel-line);
-  }
+  /* ===== SCAN LOG ===== */
+  .scan-section{ padding:64px 0; border-bottom:1px solid var(--panel-line); }
 
   .section-label{
-    font-family:var(--mono);
-    font-size:12px;
-    color:var(--muted);
-    letter-spacing:2px;
-    text-transform:uppercase;
-    margin-bottom:8px;
+    font-family:var(--mono); font-size:12px; color:var(--muted);
+    letter-spacing:2px; text-transform:uppercase; margin-bottom:8px;
   }
+  .section-title{ font-family:var(--mono); font-weight:700; font-size:22px; margin-bottom:28px; }
 
-  .section-title{
-    font-family:var(--mono);
-    font-weight:700;
-    font-size:22px;
-    margin-bottom:28px;
-  }
-
-  .terminal{
-    background:var(--panel);
-    border:1px solid var(--panel-line);
-    font-family:var(--mono);
-    font-size:13px;
-    overflow:hidden;
-  }
+  .terminal{ background:var(--panel); border:1px solid var(--panel-line); font-family:var(--mono); font-size:13px; overflow:hidden; }
 
   .terminal-bar{
-    display:flex;
-    align-items:center;
-    gap:8px;
-    padding:11px 16px;
-    border-bottom:1px solid var(--panel-line);
-    background:rgba(255,255,255,0.02);
+    display:flex; align-items:center; gap:8px; padding:11px 16px;
+    border-bottom:1px solid var(--panel-line); background:rgba(255,255,255,0.02);
   }
-  .terminal-bar span{
-    width:9px; height:9px; border-radius:50%;
-    background:#2a3644;
-  }
-  .terminal-bar .label{
-    margin-left:8px;
-    color:var(--muted);
-    font-size:11px;
-    letter-spacing:0.5px;
-    width:auto; height:auto; border-radius:0; background:none;
-  }
+  .terminal-bar span{ width:9px; height:9px; border-radius:50%; background:#2a3644; }
+  .terminal-bar .label{ margin-left:8px; color:var(--muted); font-size:11px; letter-spacing:0.5px; width:auto; height:auto; border-radius:0; background:none; }
 
-  .terminal-body{
-    padding:20px 22px;
-    min-height:260px;
-  }
+  .terminal-body{ padding:20px 22px; min-height:340px; }
 
   .scan-line{
-    display:flex;
-    gap:14px;
-    padding:5px 0;
-    color:var(--muted);
-    opacity:0;
-    animation:fadeIn 0.4s forwards;
-    white-space:nowrap;
-    overflow:hidden;
+    display:flex; gap:10px; padding:4px 0; color:var(--muted);
+    opacity:0; animation:fadeIn 0.4s forwards;
+    white-space:nowrap; overflow:hidden;
   }
-
   .scan-line .id{ color:#5b6b80; }
+  .scan-line .tag{ color:#5b6b80; }
   .scan-line .status-clean{ color:var(--blue); }
   .scan-line .status-ban{ color:var(--red); font-weight:700; }
+  .scan-line .status-check{ color:#e8b93b; }
   .scan-line.flagged{ color:var(--red); }
+  .scan-line.section-gap{ margin-top:6px; }
 
   @keyframes fadeIn{ to{ opacity:1; } }
 
-  .cursor-row{
-    display:flex;
-    align-items:center;
-    gap:8px;
-    color:var(--muted);
-    margin-top:6px;
-  }
-  .cursor{
-    width:8px; height:15px;
-    background:var(--blue);
-    animation:blink 1s step-end infinite;
-  }
+  .cursor-row{ display:flex; align-items:center; gap:8px; color:var(--muted); margin-top:6px; }
+  .cursor{ width:8px; height:15px; background:var(--blue); animation:blink 1s step-end infinite; }
   @keyframes blink{ 50%{ opacity:0; } }
 
   /* ===== PROCESS ===== */
-  .process{
-    padding:64px 0;
-    border-bottom:1px solid var(--panel-line);
-  }
+  .process{ padding:64px 0; border-bottom:1px solid var(--panel-line); }
 
   .steps{
-    display:grid;
-    grid-template-columns:repeat(3, 1fr);
-    gap:1px;
-    background:var(--panel-line);
-    border:1px solid var(--panel-line);
-    margin-top:8px;
+    display:grid; grid-template-columns:repeat(3, 1fr); gap:1px;
+    background:var(--panel-line); border:1px solid var(--panel-line); margin-top:8px;
   }
-
-  .step{
-    background:var(--bg);
-    padding:28px 24px;
-  }
-
-  .step-tag{
-    font-family:var(--mono);
-    color:var(--red);
-    font-size:12px;
-    letter-spacing:1px;
-    margin-bottom:14px;
-  }
-
-  .step h3{
-    font-family:var(--mono);
-    font-size:16px;
-    margin-bottom:10px;
-    font-weight:700;
-  }
-
-  .step p{
-    color:var(--muted);
-    font-size:14px;
-  }
+  .step{ background:var(--bg); padding:28px 24px; }
+  .step-tag{ font-family:var(--mono); color:var(--red); font-size:12px; letter-spacing:1px; margin-bottom:14px; }
+  .step h3{ font-family:var(--mono); font-size:16px; margin-bottom:10px; font-weight:700; }
+  .step p{ color:var(--muted); font-size:14px; }
 
   /* ===== WARNING BANNER ===== */
   .warning{
-    padding:40px 24px;
-    border-bottom:1px solid var(--panel-line);
-    background:repeating-linear-gradient(
-      -45deg,
-      rgba(239,68,68,0.04),
-      rgba(239,68,68,0.04) 10px,
-      transparent 10px,
-      transparent 20px
-    );
+    padding:40px 24px; border-bottom:1px solid var(--panel-line);
+    background:repeating-linear-gradient(-45deg, rgba(239,68,68,0.04), rgba(239,68,68,0.04) 10px, transparent 10px, transparent 20px);
   }
-  .warning-inner{
-    max-width:920px;
-    margin:0 auto;
-    display:flex;
-    align-items:center;
-    gap:20px;
-  }
-  .warning-mark{
-    font-family:var(--mono);
-    font-size:28px;
-    color:var(--red);
-    flex-shrink:0;
-  }
-  .warning p{
-    font-family:var(--mono);
-    font-size:14px;
-    color:var(--text);
-    line-height:1.7;
-  }
+  .warning-inner{ max-width:920px; margin:0 auto; display:flex; align-items:center; gap:20px; }
+  .warning-mark{ font-family:var(--mono); font-size:28px; color:var(--red); flex-shrink:0; }
+  .warning p{ font-family:var(--mono); font-size:14px; color:var(--text); line-height:1.7; }
   .warning p span{ color:var(--red); font-weight:700; }
 
   /* ===== REPORT FORM ===== */
-  .report{
-    padding:70px 0 90px;
-  }
-
-  .report-grid{
-    display:grid;
-    grid-template-columns:1fr 1.2fr;
-    gap:50px;
-    margin-top:30px;
-  }
-
-  .report-text p{
-    color:var(--muted);
-    font-size:15px;
-    margin-bottom:16px;
-  }
-
+  .report{ padding:70px 0 90px; }
+  .report-grid{ display:grid; grid-template-columns:1fr 1.2fr; gap:50px; margin-top:30px; }
+  .report-text p{ color:var(--muted); font-size:15px; margin-bottom:16px; }
   .report-text .highlight{
-    font-family:var(--mono);
-    color:var(--text);
-    font-size:13px;
-    border-left:2px solid var(--red);
-    padding-left:14px;
-    margin-top:24px;
+    font-family:var(--mono); color:var(--text); font-size:13px;
+    border-left:2px solid var(--red); padding-left:14px; margin-top:24px;
   }
 
-  form{
-    display:flex;
-    flex-direction:column;
-    gap:16px;
-  }
-
+  form{ display:flex; flex-direction:column; gap:16px; }
   label{
-    font-family:var(--mono);
-    font-size:11px;
-    color:var(--muted);
-    letter-spacing:1px;
-    text-transform:uppercase;
-    margin-bottom:6px;
-    display:block;
+    font-family:var(--mono); font-size:11px; color:var(--muted);
+    letter-spacing:1px; text-transform:uppercase; margin-bottom:6px; display:block;
   }
+  label .optional-tag{ color:#5b6b80; text-transform:none; letter-spacing:0; margin-left:6px; }
 
   input, textarea{
-    width:100%;
-    background:var(--panel);
-    border:1px solid var(--panel-line);
-    color:var(--text);
-    font-family:var(--sans);
-    font-size:14px;
-    padding:12px 14px;
-    outline:none;
+    width:100%; background:var(--panel); border:1px solid var(--panel-line); color:var(--text);
+    font-family:var(--sans); font-size:14px; padding:12px 14px; outline:none;
     transition:border-color 0.2s;
   }
   input:focus, textarea:focus{ border-color:var(--blue); }
   textarea{ resize:vertical; min-height:110px; }
 
   .field{ display:flex; flex-direction:column; }
+  .field-row{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
 
-  .submit-row{
-    display:flex;
-    align-items:center;
-    gap:16px;
-    margin-top:6px;
-    flex-wrap:wrap;
-  }
-
-  .form-note{
-    font-family:var(--mono);
-    font-size:11px;
-    color:#5b6b80;
-  }
+  .submit-row{ display:flex; align-items:center; gap:16px; margin-top:6px; flex-wrap:wrap; }
+  .form-note{ font-family:var(--mono); font-size:11px; color:#5b6b80; }
 
   /* ===== FOOTER ===== */
-  footer{
-    border-top:1px solid var(--panel-line);
-    padding:26px 24px;
-  }
+  footer{ border-top:1px solid var(--panel-line); padding:26px 24px; }
   .footer-inner{
-    max-width:920px;
-    margin:0 auto;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    font-family:var(--mono);
-    font-size:12px;
-    color:#5b6b80;
-    flex-wrap:wrap;
-    gap:10px;
+    max-width:920px; margin:0 auto; display:flex; justify-content:space-between; align-items:center;
+    font-family:var(--mono); font-size:12px; color:#5b6b80; flex-wrap:wrap; gap:10px;
   }
 
   @media (max-width:720px){
     .steps{ grid-template-columns:1fr; }
     .report-grid{ grid-template-columns:1fr; gap:34px; }
+    .field-row{ grid-template-columns:1fr; }
     .hero{ padding:64px 0 50px; }
+    .header-inner{ justify-content:center; }
   }
 
-  @media (prefers-reduced-motion: reduce){
-    *{ animation:none !important; transition:none !important; }
-  }
+  @media (prefers-reduced-motion: reduce){ *{ animation:none !important; transition:none !important; } }
 </style>
 </head>
 <body>
@@ -468,33 +285,46 @@
 <header>
   <div class="wrap header-inner">
     <div class="brand">
-      <div class="brand-mark">V</div>
-      VACCheckerService
+      <div class="brand-mark"><img src="data:image/jpeg;base64,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" alt="VACCheckerService Logo"></div>
+      <span data-i18n="brand">VACCheckerService</span>
     </div>
-    <div class="live-pill"><span class="live-dot"></span> LIVE MONITORING</div>
+    <div class="header-right">
+      <a href="mailto:vacchecker@proton.me" class="contact-mail">
+        <span class="mail-dot"></span> vacchecker@proton.me
+      </a>
+      <a href="https://github.com/VACCheckerService" target="_blank" rel="noopener" class="contact-mail" style="color:var(--muted); border-color:var(--panel-line); background:rgba(255,255,255,0.02);">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+        <span data-i18n="githubLabel">GitHub</span>
+      </a>
+      <div class="lang-switch">
+        <button type="button" class="active" data-lang="de">DE</button>
+        <button type="button" data-lang="en">EN</button>
+      </div>
+      <div class="live-pill"><span class="live-dot"></span> <span data-i18n="live">LIVE MONITORING</span></div>
+    </div>
   </div>
 </header>
 
 <section class="hero">
   <div class="wrap">
-    <div class="eyebrow">COMMUNITY ANTI-CHEAT ANALYSIS</div>
-    <h1>Ban umgangen? <span class="accent">Wir finden die Verbindung.</span></h1>
-    <p class="hero-sub">
+    <div class="eyebrow" data-i18n="eyebrow">COMMUNITY ANTI-CHEAT ANALYSIS</div>
+    <h1 data-i18n="h1">Ban umgangen? <span class="accent">Wir finden die Verbindung.</span></h1>
+    <p class="hero-sub" data-i18n="herosub">
       Manipulierte Accounts, gelöschte Spuren, neue Namen — die Historie bleibt trotzdem sichtbar.
       <strong>VACCheckerService</strong> analysiert Steam-Profile, Freundeslisten und Avatar-Verläufe,
       um Ban-Evader zweifelsfrei zu identifizieren, bevor sie wieder auf eurem Server spielen.
     </p>
     <div class="hero-ctas">
-      <a href="#report" class="btn btn-primary">Verdachtsfall melden →</a>
-      <a href="#scan" class="btn btn-ghost">Wie die Analyse abläuft</a>
+      <a href="#report" class="btn btn-primary" data-i18n="cta1">Verdachtsfall melden →</a>
+      <a href="#scan" class="btn btn-ghost" data-i18n="cta2">Wie die Analyse abläuft</a>
     </div>
   </div>
 </section>
 
 <section class="scan-section" id="scan">
   <div class="wrap">
-    <div class="section-label">Live-Beispiel</div>
-    <div class="section-title">So sieht ein Scan aus</div>
+    <div class="section-label" data-i18n="livelabel">Live-Beispiel</div>
+    <div class="section-title" data-i18n="scantitle">So läuft eine vollständige Analyse ab</div>
 
     <div class="terminal">
       <div class="terminal-bar">
@@ -508,24 +338,24 @@
 
 <section class="process">
   <div class="wrap">
-    <div class="section-label">Vorgehen</div>
-    <div class="section-title">Drei Schritte bis zur Bestätigung</div>
+    <div class="section-label" data-i18n="proclabel">Vorgehen</div>
+    <div class="section-title" data-i18n="proctitle">Drei Schritte bis zur Bestätigung</div>
 
     <div class="steps">
       <div class="step">
-        <div class="step-tag">01 — MELDUNG</div>
-        <h3>Ihr meldet den Verdacht</h3>
-        <p>Ein Profil-Link genügt. Auffälliges Verhalten, ein Smurf-Verdacht oder ein zu sauberes Profil reichen als Ausgangspunkt.</p>
+        <div class="step-tag">01 — <span data-i18n="step1tag">MELDUNG</span></div>
+        <h3 data-i18n="step1h">Ihr meldet den Verdacht</h3>
+        <p data-i18n="step1p">Ein Profil-Link genügt. Auffälliges Verhalten, ein Smurf-Verdacht oder ein zu sauberes Profil reichen als Ausgangspunkt.</p>
       </div>
       <div class="step">
-        <div class="step-tag">02 — ANALYSE</div>
-        <h3>Wir ziehen die Historie</h3>
-        <p>Freundeslisten, Gruppenmitgliedschaften, Avatar-Verläufe und Namenswechsel werden gegen bekannte VAC-Bans abgeglichen.</p>
+        <div class="step-tag">02 — <span data-i18n="step2tag">ANALYSE</span></div>
+        <h3 data-i18n="step2h">Wir ziehen die Historie</h3>
+        <p data-i18n="step2p">Freundeslisten, Gruppenmitgliedschaften, Avatar-Verläufe und Namenswechsel werden über SteamID.uk und den Steam-Profildaten gegen bekannte VAC-Bans abgeglichen.</p>
       </div>
       <div class="step">
-        <div class="step-tag">03 — BEWEIS</div>
-        <h3>Ihr bekommt die Kette</h3>
-        <p>Kein Bauchgefühl — eine dokumentierte, nachvollziehbare Indizienkette, mit der euer Admin-Team sanktionieren kann.</p>
+        <div class="step-tag">03 — <span data-i18n="step3tag">BEWEIS</span></div>
+        <h3 data-i18n="step3h">Ihr bekommt die Kette</h3>
+        <p data-i18n="step3p">Kein Bauchgefühl — eine dokumentierte, nachvollziehbare Indizienkette, mit der euer Admin-Team sanktionieren kann.</p>
       </div>
     </div>
   </div>
@@ -534,44 +364,52 @@
 <div class="warning">
   <div class="warning-inner">
     <div class="warning-mark">!</div>
-    <p>Ein neuer Name und ein leeres Profil sind keine Tarnung. <span>Avatare, Gruppen und Freundeslisten hinterlassen Spuren</span> — und diese Spuren werden ausgewertet, nicht ignoriert.</p>
+    <p data-i18n="warning">Ein neuer Name und ein leeres Profil sind keine Tarnung. <span>Avatare, Gruppen und Freundeslisten hinterlassen Spuren</span> — und diese Spuren werden ausgewertet, nicht ignoriert.</p>
   </div>
 </div>
 
 <section class="report" id="report">
   <div class="wrap">
-    <div class="section-label">Fall melden</div>
-    <div class="section-title">Verdachtsfall einreichen</div>
+    <div class="section-label" data-i18n="reportlabel">Fall melden</div>
+    <div class="section-title" data-i18n="reporttitle">Verdachtsfall einreichen</div>
 
     <div class="report-grid">
       <div class="report-text">
-        <p>Je konkreter die Angaben, desto schneller die Analyse. Ein Steam-Profil-Link plus kurze Beschreibung des Verdachts reicht als Start — den Rest übernimmt die Auswertung.</p>
-        <p>Es entsteht kein öffentliches Ticket. Die Angaben gehen ausschließlich an das Analyse-Team.</p>
-        <div class="highlight">
-          Antwortzeit: in der Regel innerhalb von 24–48 Stunden.
-        </div>
+        <p data-i18n="reportp1">Je konkreter die Angaben, desto schneller die Analyse. Ein Steam-Profil-Link plus kurze Beschreibung des Verdachts reicht als Start — den Rest übernimmt die Auswertung.</p>
+        <p data-i18n="reportp2">Es entsteht kein öffentliches Ticket. Die Angaben gehen ausschließlich an das Analyse-Team.</p>
+        <div class="highlight" data-i18n="reporthighlight">Antwortzeit: in der Regel innerhalb von 24–48 Stunden.</div>
       </div>
 
-      <form action="mailto:vaccheckerservice@web-library.net" method="POST" enctype="text/plain">
+      <form action="mailto:vacchecker@proton.me" method="POST" enctype="text/plain">
         <div class="field">
-          <label for="reporter">Dein Name / Discord-Tag</label>
-          <input type="text" id="reporter" name="Melder" placeholder="z.B. TheSystem#0001" required>
+          <label for="email" data-i18n="lblEmail">Deine E-Mail-Adresse</label>
+          <input type="email" id="email" name="Email" placeholder="name@beispiel.com" required>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="discord" data-i18n="lblDiscord">Discord-Tag <span class="optional-tag" data-i18n="optional">(optional)</span></label>
+            <input type="text" id="discord" name="Discord" placeholder="z.B. TheSystem#0001">
+          </div>
+          <div class="field">
+            <label for="ownsteam" data-i18n="lblOwnSteam">Dein Steam-Profil <span class="optional-tag" data-i18n="optional">(optional)</span></label>
+            <input type="text" id="ownsteam" name="Eigenes_Steam_Profil" placeholder="https://steamcommunity.com/profiles/...">
+          </div>
         </div>
         <div class="field">
-          <label for="suspect">Profil-Link des Verdachtsfalls</label>
+          <label for="suspect" data-i18n="lblSuspect">Profil-Link des Verdachtsfalls</label>
           <input type="text" id="suspect" name="Verdaechtiges_Profil" placeholder="https://steamcommunity.com/profiles/..." required>
         </div>
         <div class="field">
-          <label for="linked">Vermuteter verknüpfter Account (falls bekannt)</label>
+          <label for="linked" data-i18n="lblLinked">Vermuteter verknüpfter Account <span class="optional-tag" data-i18n="optionalKnown">(falls bekannt)</span></label>
           <input type="text" id="linked" name="Verknuepfter_Account" placeholder="Optional">
         </div>
         <div class="field">
-          <label for="details">Beschreibung des Verdachts</label>
-          <textarea id="details" name="Beschreibung" placeholder="Was wurde beobachtet? Cheating, Namensähnlichkeit, gemeinsame Gruppe, Avatar-Übereinstimmung, ..." required></textarea>
+          <label for="details" data-i18n="lblDetails">Beschreibung des Verdachts</label>
+          <textarea id="details" name="Beschreibung" data-i18n-placeholder="detailsPlaceholder" placeholder="Was wurde beobachtet? Cheating, Namensähnlichkeit, gemeinsame Gruppe, Avatar-Übereinstimmung, ..." required></textarea>
         </div>
         <div class="submit-row">
-          <button type="submit" class="btn btn-primary">Meldung absenden →</button>
-          <span class="form-note">öffnet dein E-Mail-Programm</span>
+          <button type="submit" class="btn btn-primary" data-i18n="submitBtn">Meldung absenden →</button>
+          <span class="form-note" data-i18n="submitNote">öffnet dein E-Mail-Programm</span>
         </div>
       </form>
     </div>
@@ -580,44 +418,184 @@
 
 <footer>
   <div class="footer-inner">
-    <div>© VACCheckerService — Community Anti-Cheat Analysis</div>
-    <div>STATUS: <span style="color:var(--red)">ACTIVE</span></div>
+    <div data-i18n="footerLeft">© VACCheckerService — Community Anti-Cheat Analysis</div>
+    <div style="display:flex; align-items:center; gap:18px;">
+      <a href="https://github.com/VACCheckerService" target="_blank" rel="noopener" style="color:#5b6b80; text-decoration:none;">github.com/VACCheckerService</a>
+      <span><span data-i18n="footerStatus">STATUS:</span> <span style="color:var(--red)">ACTIVE</span></span>
+    </div>
   </div>
 </footer>
 
 <script>
-  const scans = [
-    { id: '76561199084098166', name: 'denik', status: 'clean' },
-    { id: '76561198317714146', name: 'Manuellsen', status: 'clean' },
-    { id: '76561199029211252', name: 'dennyE', status: 'ban', flag: 'Avatar-Match mit "denik" → BANNUMGEHUNG' },
-    { id: '76561198417369910', name: 'gustelputsch', status: 'clean' },
-    { id: '76561199157276802', name: 'gustelputsch', status: 'ban', flag: 'Identischer Anzeigename → BANNUMGEHUNG' },
-    { id: '76561199029873407', name: 'Maxellputsch', status: 'clean' },
-  ];
+  const i18n = {
+    de: {
+      brand: "VACCheckerService",
+      live: "LIVE MONITORING",
+      githubLabel: "GitHub",
+      eyebrow: "COMMUNITY ANTI-CHEAT ANALYSIS",
+      h1: 'Ban umgangen? <span class="accent">Wir finden die Verbindung.</span>',
+      herosub: 'Manipulierte Accounts, gelöschte Spuren, neue Namen — die Historie bleibt trotzdem sichtbar. <strong>VACCheckerService</strong> analysiert Steam-Profile, Freundeslisten und Avatar-Verläufe, um Ban-Evader zweifelsfrei zu identifizieren, bevor sie wieder auf eurem Server spielen.',
+      cta1: "Verdachtsfall melden →",
+      cta2: "Wie die Analyse abläuft",
+      livelabel: "Live-Beispiel",
+      scantitle: "So läuft eine vollständige Analyse ab",
+      proclabel: "Vorgehen",
+      proctitle: "Drei Schritte bis zur Bestätigung",
+      step1tag: "MELDUNG",
+      step1h: "Ihr meldet den Verdacht",
+      step1p: "Ein Profil-Link genügt. Auffälliges Verhalten, ein Smurf-Verdacht oder ein zu sauberes Profil reichen als Ausgangspunkt.",
+      step2tag: "ANALYSE",
+      step2h: "Wir ziehen die Historie",
+      step2p: "Freundeslisten, Gruppenmitgliedschaften, Avatar-Verläufe und Namenswechsel werden über SteamID.uk und den Steam-Profildaten gegen bekannte VAC-Bans abgeglichen.",
+      step3tag: "BEWEIS",
+      step3h: "Ihr bekommt die Kette",
+      step3p: "Kein Bauchgefühl — eine dokumentierte, nachvollziehbare Indizienkette, mit der euer Admin-Team sanktionieren kann.",
+      warning: 'Ein neuer Name und ein leeres Profil sind keine Tarnung. <span>Avatare, Gruppen und Freundeslisten hinterlassen Spuren</span> — und diese Spuren werden ausgewertet, nicht ignoriert.',
+      reportlabel: "Fall melden",
+      reporttitle: "Verdachtsfall einreichen",
+      reportp1: "Je konkreter die Angaben, desto schneller die Analyse. Ein Steam-Profil-Link plus kurze Beschreibung des Verdachts reicht als Start — den Rest übernimmt die Auswertung.",
+      reportp2: "Es entsteht kein öffentliches Ticket. Die Angaben gehen ausschließlich an das Analyse-Team.",
+      reporthighlight: "Antwortzeit: in der Regel innerhalb von 24–48 Stunden.",
+      lblEmail: "Deine E-Mail-Adresse",
+      lblDiscord: "Discord-Tag",
+      lblOwnSteam: "Dein Steam-Profil",
+      lblSuspect: "Profil-Link des Verdachtsfalls",
+      lblLinked: "Vermuteter verknüpfter Account",
+      lblDetails: "Beschreibung des Verdachts",
+      optional: "(optional)",
+      optionalKnown: "(falls bekannt)",
+      detailsPlaceholder: "Was wurde beobachtet? Cheating, Namensähnlichkeit, gemeinsame Gruppe, Avatar-Übereinstimmung, ...",
+      submitBtn: "Meldung absenden →",
+      submitNote: "öffnet dein E-Mail-Programm",
+      footerLeft: "© VACCheckerService — Community Anti-Cheat Analysis",
+      footerStatus: "STATUS:",
+      scanEntries: [
+        { id: '76561199084098166', name: 'denik', action: 'Steam-Profil laden', status: 'check' },
+        { id: '76561199084098166', name: 'denik', action: 'Freundesliste analysieren', status: 'clean' },
+        { id: '76561198317714146', name: 'TheSystem', action: 'Gruppenmitgliedschaften abgleichen', status: 'clean' },
+        { id: '76561198317714146', name: 'TheSystem', action: 'SteamID.uk Verlauf abrufen', status: 'check' },
+        { id: '76561199029211252', name: 'dennyE', action: 'Avatar-Historie abgleichen', status: 'ban', flag: 'Avatar-Match mit "denik" → BANNUMGEHUNG' },
+        { id: '76561198417369910', name: 'gustelputsch', action: 'Steam-Profil laden', status: 'clean' },
+        { id: '76561199157276802', name: 'gustelputsch', action: 'Anzeigename-Abgleich', status: 'ban', flag: 'Identischer Anzeigename → BANNUMGEHUNG' },
+        { id: '76561199029873407', name: 'Maxellputsch', action: 'SteamID.uk Netzwerk-Check', status: 'clean' },
+      ],
+    },
+    en: {
+      brand: "VACCheckerService",
+      live: "LIVE MONITORING",
+      githubLabel: "GitHub",
+      eyebrow: "COMMUNITY ANTI-CHEAT ANALYSIS",
+      h1: 'Ban evaded? <span class="accent">We find the connection.</span>',
+      herosub: 'Manipulated accounts, wiped traces, new names — the history is still visible. <strong>VACCheckerService</strong> analyzes Steam profiles, friend lists and avatar histories to identify ban evaders beyond doubt, before they play on your server again.',
+      cta1: "Report a suspected case →",
+      cta2: "How the analysis works",
+      livelabel: "Live example",
+      scantitle: "How a full analysis runs",
+      proclabel: "Process",
+      proctitle: "Three steps to confirmation",
+      step1tag: "REPORT",
+      step1h: "You report the suspicion",
+      step1p: "One profile link is enough. Suspicious behavior, a suspected smurf, or an oddly clean profile are all a valid starting point.",
+      step2tag: "ANALYSIS",
+      step2h: "We pull the history",
+      step2p: "Friend lists, group memberships, avatar histories and name changes are cross-checked against known VAC bans via SteamID.uk and Steam profile data.",
+      step3tag: "EVIDENCE",
+      step3h: "You get the chain",
+      step3p: "No gut feeling — a documented, traceable chain of evidence your admin team can act on.",
+      warning: 'A new name and an empty profile are not a disguise. <span>Avatars, groups and friend lists leave traces</span> — and those traces are analyzed, not ignored.',
+      reportlabel: "Report a case",
+      reporttitle: "Submit a suspected case",
+      reportp1: "The more specific the details, the faster the analysis. A Steam profile link plus a short description of the suspicion is enough to start — the analysis takes care of the rest.",
+      reportp2: "No public ticket is created. The information goes exclusively to the analysis team.",
+      reporthighlight: "Response time: typically within 24–48 hours.",
+      lblEmail: "Your email address",
+      lblDiscord: "Discord tag",
+      lblOwnSteam: "Your Steam profile",
+      lblSuspect: "Profile link of the suspected case",
+      lblLinked: "Suspected linked account",
+      lblDetails: "Description of the suspicion",
+      optional: "(optional)",
+      optionalKnown: "(if known)",
+      detailsPlaceholder: "What was observed? Cheating, name similarity, shared group, avatar match, ...",
+      submitBtn: "Submit report →",
+      submitNote: "opens your email app",
+      footerLeft: "© VACCheckerService — Community Anti-Cheat Analysis",
+      footerStatus: "STATUS:",
+      scanEntries: [
+        { id: '76561199084098166', name: 'denik', action: 'loading Steam profile', status: 'check' },
+        { id: '76561199084098166', name: 'denik', action: 'analyzing friend list', status: 'clean' },
+        { id: '76561198317714146', name: 'TheSystem', action: 'cross-checking group memberships', status: 'clean' },
+        { id: '76561198317714146', name: 'TheSystem', action: 'fetching SteamID.uk history', status: 'check' },
+        { id: '76561199029211252', name: 'dennyE', action: 'matching avatar history', status: 'ban', flag: 'avatar match with "denik" → BAN EVASION' },
+        { id: '76561198417369910', name: 'gustelputsch', action: 'loading Steam profile', status: 'clean' },
+        { id: '76561199157276802', name: 'gustelputsch', action: 'display name match', status: 'ban', flag: 'identical display name → BAN EVASION' },
+        { id: '76561199029873407', name: 'Maxellputsch', action: 'SteamID.uk network check', status: 'clean' },
+      ],
+    }
+  };
 
-  const body = document.getElementById('terminalBody');
-  let i = 0;
+  let currentLang = 'de';
 
-  function renderLine(entry, delay){
-    setTimeout(() => {
-      const row = document.createElement('div');
-      row.className = 'scan-line' + (entry.status === 'ban' ? ' flagged' : '');
-      const statusText = entry.status === 'clean'
-        ? '<span class="status-clean">CLEAN</span>'
-        : '<span class="status-ban">VAC BANNED</span>';
-      row.innerHTML = `<span class="id">[${entry.id}]</span> <span>${entry.name}</span> → ${statusText}${entry.flag ? ' — ' + entry.flag : ''}`;
-      body.appendChild(row);
-    }, delay);
+  function applyLang(lang){
+    currentLang = lang;
+    const dict = i18n[lang];
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      if(dict[key] !== undefined) el.innerHTML = dict[key];
+    });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+      const key = el.getAttribute('data-i18n-placeholder');
+      if(dict[key] !== undefined) el.setAttribute('placeholder', dict[key]);
+    });
+    document.querySelectorAll('.lang-switch button').forEach(b => {
+      b.classList.toggle('active', b.getAttribute('data-lang') === lang);
+    });
+    document.documentElement.lang = lang;
+    runScan(lang);
   }
 
-  scans.forEach((entry, idx) => renderLine(entry, idx * 650));
+  document.querySelectorAll('.lang-switch button').forEach(btn => {
+    btn.addEventListener('click', () => applyLang(btn.getAttribute('data-lang')));
+  });
 
-  setTimeout(() => {
-    const cursorRow = document.createElement('div');
-    cursorRow.className = 'cursor-row';
-    cursorRow.innerHTML = 'scanning next batch <span class="cursor"></span>';
-    body.appendChild(cursorRow);
-  }, scans.length * 650 + 300);
+  const body = document.getElementById('terminalBody');
+  let scanTimeouts = [];
+
+  function runScan(lang){
+    scanTimeouts.forEach(t => clearTimeout(t));
+    scanTimeouts = [];
+    body.innerHTML = '';
+    const entries = i18n[lang].scanEntries;
+    const statusLabel = {
+      clean: lang === 'de' ? 'CLEAN' : 'CLEAN',
+      ban: lang === 'de' ? 'VAC BANNED' : 'VAC BANNED',
+      check: lang === 'de' ? 'PRÜFE...' : 'CHECKING...'
+    };
+
+    entries.forEach((entry, idx) => {
+      const t = setTimeout(() => {
+        const row = document.createElement('div');
+        row.className = 'scan-line' + (entry.status === 'ban' ? ' flagged' : '');
+        let statusHtml;
+        if(entry.status === 'clean') statusHtml = `<span class="status-clean">${statusLabel.clean}</span>`;
+        else if(entry.status === 'ban') statusHtml = `<span class="status-ban">${statusLabel.ban}</span>`;
+        else statusHtml = `<span class="status-check">${statusLabel.check}</span>`;
+        row.innerHTML = `<span class="id">[${entry.id}]</span> <span class="tag">${entry.name}</span> — ${entry.action} → ${statusHtml}${entry.flag ? ' — ' + entry.flag : ''}`;
+        body.appendChild(row);
+      }, idx * 550);
+      scanTimeouts.push(t);
+    });
+
+    const cursorT = setTimeout(() => {
+      const cursorRow = document.createElement('div');
+      cursorRow.className = 'cursor-row';
+      cursorRow.innerHTML = (lang === 'de' ? 'scanne nächsten Batch' : 'scanning next batch') + ' <span class="cursor"></span>';
+      body.appendChild(cursorRow);
+    }, entries.length * 550 + 300);
+    scanTimeouts.push(cursorT);
+  }
+
+  applyLang('de');
 </script>
 
 </body>

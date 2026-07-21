@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VACCheckerService — Community Anti-Cheat Analysis</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #05070a;
+    --panel: #0d1520;
+    --panel-line: #1b2532;
+    --blue: #3b82f6;
+    --red: #ef4444;
+    --red-glow: rgba(239,68,68,0.35);
+    --text: #e8edf5;
+    --muted: #8b98a9;
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'Inter', sans-serif;
+  }
+
+  *{ margin:0; padding:0; box-sizing:border-box; }
+
+  html{ scroll-behavior:smooth; }
+
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--sans);
+    line-height:1.6;
+    overflow-x:hidden;
+  }
+
+  body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    background:
+      radial-gradient(ellipse at 20% -10%, rgba(59,130,246,0.10), transparent 45%),
+      radial-gradient(ellipse at 90% 10%, rgba(239,68,68,0.08), transparent 40%);
+    pointer-events:none;
+    z-index:0;
+  }
+
+  /* scanline texture */
+  body::after{
+    content:"";
+    position:fixed;
+    inset:0;
+    background:repeating-linear-gradient(
+      to bottom,
+      rgba(255,255,255,0.012) 0px,
+      rgba(255,255,255,0.012) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+    pointer-events:none;
+    z-index:1;
+    opacity:0.5;
+  }
+
+  a{ color:inherit; }
+
+  .wrap{ max-width:920px; margin:0 auto; padding:0 24px; position:relative; z-index:2; }
+
+  /* ===== HEADER ===== */
+  header{
+    border-bottom:1px solid var(--panel-line);
+    background:linear-gradient(180deg, rgba(13,21,32,0.8), rgba(13,21,32,0.3));
+  }
+
+  .header-inner{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:20px 24px;
+  }
+
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    font-family:var(--mono);
+    font-weight:800;
+    font-size:17px;
+    letter-spacing:0.5px;
+  }
+
+  .brand-mark{
+    width:34px; height:34px;
+    border:1.5px solid var(--blue);
+    display:flex; align-items:center; justify-content:center;
+    position:relative;
+    color:var(--blue);
+    font-size:15px;
+  }
+  .brand-mark::after{
+    content:"";
+    position:absolute;
+    inset:-4px;
+    border:1px solid rgba(59,130,246,0.25);
+  }
+
+  .live-pill{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-family:var(--mono);
+    font-size:12px;
+    color:var(--red);
+    letter-spacing:0.5px;
+    border:1px solid rgba(239,68,68,0.3);
+    padding:6px 12px;
+    background:rgba(239,68,68,0.06);
+  }
+
+  .live-dot{
+    width:7px; height:7px;
+    border-radius:50%;
+    background:var(--red);
+    box-shadow:0 0 8px var(--red-glow);
+    animation:pulse 1.6s infinite;
+  }
+
+  @keyframes pulse{
+    0%,100%{ opacity:1; }
+    50%{ opacity:0.3; }
+  }
+
+  /* ===== HERO ===== */
+  .hero{
+    padding:90px 0 70px;
+    border-bottom:1px solid var(--panel-line);
+  }
+
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:12px;
+    color:var(--muted);
+    letter-spacing:2px;
+    text-transform:uppercase;
+    margin-bottom:22px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .eyebrow::before{
+    content:"";
+    width:24px; height:1px;
+    background:var(--red);
+  }
+
+  h1{
+    font-family:var(--mono);
+    font-weight:800;
+    font-size:clamp(32px, 5.5vw, 54px);
+    line-height:1.08;
+    letter-spacing:-0.5px;
+    max-width:14ch;
+  }
+  h1 .accent{ color:var(--red); }
+
+  .hero-sub{
+    margin-top:26px;
+    max-width:52ch;
+    color:var(--muted);
+    font-size:16px;
+  }
+
+  .hero-sub strong{ color:var(--text); font-weight:600; }
+
+  .hero-ctas{
+    margin-top:36px;
+    display:flex;
+    gap:16px;
+    flex-wrap:wrap;
+  }
+
+  .btn{
+    font-family:var(--mono);
+    font-size:13px;
+    letter-spacing:0.5px;
+    padding:13px 22px;
+    border:1px solid var(--panel-line);
+    cursor:pointer;
+    text-decoration:none;
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    transition:border-color 0.2s, background 0.2s;
+  }
+  .btn-primary{
+    background:var(--red);
+    border-color:var(--red);
+    color:#05070a;
+    font-weight:700;
+  }
+  .btn-primary:hover{ background:#ff5c5c; border-color:#ff5c5c; }
+  .btn-ghost{ color:var(--muted); }
+  .btn-ghost:hover{ border-color:var(--blue); color:var(--text); }
+
+  /* ===== SCAN LOG (SIGNATURE ELEMENT) ===== */
+  .scan-section{
+    padding:64px 0;
+    border-bottom:1px solid var(--panel-line);
+  }
+
+  .section-label{
+    font-family:var(--mono);
+    font-size:12px;
+    color:var(--muted);
+    letter-spacing:2px;
+    text-transform:uppercase;
+    margin-bottom:8px;
+  }
+
+  .section-title{
+    font-family:var(--mono);
+    font-weight:700;
+    font-size:22px;
+    margin-bottom:28px;
+  }
+
+  .terminal{
+    background:var(--panel);
+    border:1px solid var(--panel-line);
+    font-family:var(--mono);
+    font-size:13px;
+    overflow:hidden;
+  }
+
+  .terminal-bar{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:11px 16px;
+    border-bottom:1px solid var(--panel-line);
+    background:rgba(255,255,255,0.02);
+  }
+  .terminal-bar span{
+    width:9px; height:9px; border-radius:50%;
+    background:#2a3644;
+  }
+  .terminal-bar .label{
+    margin-left:8px;
+    color:var(--muted);
+    font-size:11px;
+    letter-spacing:0.5px;
+    width:auto; height:auto; border-radius:0; background:none;
+  }
+
+  .terminal-body{
+    padding:20px 22px;
+    min-height:260px;
+  }
+
+  .scan-line{
+    display:flex;
+    gap:14px;
+    padding:5px 0;
+    color:var(--muted);
+    opacity:0;
+    animation:fadeIn 0.4s forwards;
+    white-space:nowrap;
+    overflow:hidden;
+  }
+
+  .scan-line .id{ color:#5b6b80; }
+  .scan-line .status-clean{ color:var(--blue); }
+  .scan-line .status-ban{ color:var(--red); font-weight:700; }
+  .scan-line.flagged{ color:var(--red); }
+
+  @keyframes fadeIn{ to{ opacity:1; } }
+
+  .cursor-row{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    color:var(--muted);
+    margin-top:6px;
+  }
+  .cursor{
+    width:8px; height:15px;
+    background:var(--blue);
+    animation:blink 1s step-end infinite;
+  }
+  @keyframes blink{ 50%{ opacity:0; } }
+
+  /* ===== PROCESS ===== */
+  .process{
+    padding:64px 0;
+    border-bottom:1px solid var(--panel-line);
+  }
+
+  .steps{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:1px;
+    background:var(--panel-line);
+    border:1px solid var(--panel-line);
+    margin-top:8px;
+  }
+
+  .step{
+    background:var(--bg);
+    padding:28px 24px;
+  }
+
+  .step-tag{
+    font-family:var(--mono);
+    color:var(--red);
+    font-size:12px;
+    letter-spacing:1px;
+    margin-bottom:14px;
+  }
+
+  .step h3{
+    font-family:var(--mono);
+    font-size:16px;
+    margin-bottom:10px;
+    font-weight:700;
+  }
+
+  .step p{
+    color:var(--muted);
+    font-size:14px;
+  }
+
+  /* ===== WARNING BANNER ===== */
+  .warning{
+    padding:40px 24px;
+    border-bottom:1px solid var(--panel-line);
+    background:repeating-linear-gradient(
+      -45deg,
+      rgba(239,68,68,0.04),
+      rgba(239,68,68,0.04) 10px,
+      transparent 10px,
+      transparent 20px
+    );
+  }
+  .warning-inner{
+    max-width:920px;
+    margin:0 auto;
+    display:flex;
+    align-items:center;
+    gap:20px;
+  }
+  .warning-mark{
+    font-family:var(--mono);
+    font-size:28px;
+    color:var(--red);
+    flex-shrink:0;
+  }
+  .warning p{
+    font-family:var(--mono);
+    font-size:14px;
+    color:var(--text);
+    line-height:1.7;
+  }
+  .warning p span{ color:var(--red); font-weight:700; }
+
+  /* ===== REPORT FORM ===== */
+  .report{
+    padding:70px 0 90px;
+  }
+
+  .report-grid{
+    display:grid;
+    grid-template-columns:1fr 1.2fr;
+    gap:50px;
+    margin-top:30px;
+  }
+
+  .report-text p{
+    color:var(--muted);
+    font-size:15px;
+    margin-bottom:16px;
+  }
+
+  .report-text .highlight{
+    font-family:var(--mono);
+    color:var(--text);
+    font-size:13px;
+    border-left:2px solid var(--red);
+    padding-left:14px;
+    margin-top:24px;
+  }
+
+  form{
+    display:flex;
+    flex-direction:column;
+    gap:16px;
+  }
+
+  label{
+    font-family:var(--mono);
+    font-size:11px;
+    color:var(--muted);
+    letter-spacing:1px;
+    text-transform:uppercase;
+    margin-bottom:6px;
+    display:block;
+  }
+
+  input, textarea{
+    width:100%;
+    background:var(--panel);
+    border:1px solid var(--panel-line);
+    color:var(--text);
+    font-family:var(--sans);
+    font-size:14px;
+    padding:12px 14px;
+    outline:none;
+    transition:border-color 0.2s;
+  }
+  input:focus, textarea:focus{ border-color:var(--blue); }
+  textarea{ resize:vertical; min-height:110px; }
+
+  .field{ display:flex; flex-direction:column; }
+
+  .submit-row{
+    display:flex;
+    align-items:center;
+    gap:16px;
+    margin-top:6px;
+    flex-wrap:wrap;
+  }
+
+  .form-note{
+    font-family:var(--mono);
+    font-size:11px;
+    color:#5b6b80;
+  }
+
+  /* ===== FOOTER ===== */
+  footer{
+    border-top:1px solid var(--panel-line);
+    padding:26px 24px;
+  }
+  .footer-inner{
+    max-width:920px;
+    margin:0 auto;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    font-family:var(--mono);
+    font-size:12px;
+    color:#5b6b80;
+    flex-wrap:wrap;
+    gap:10px;
+  }
+
+  @media (max-width:720px){
+    .steps{ grid-template-columns:1fr; }
+    .report-grid{ grid-template-columns:1fr; gap:34px; }
+    .hero{ padding:64px 0 50px; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation:none !important; transition:none !important; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap header-inner">
+    <div class="brand">
+      <div class="brand-mark">V</div>
+      VACCheckerService
+    </div>
+    <div class="live-pill"><span class="live-dot"></span> LIVE MONITORING</div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <div class="eyebrow">COMMUNITY ANTI-CHEAT ANALYSIS</div>
+    <h1>Ban umgangen? <span class="accent">Wir finden die Verbindung.</span></h1>
+    <p class="hero-sub">
+      Manipulierte Accounts, gelöschte Spuren, neue Namen — die Historie bleibt trotzdem sichtbar.
+      <strong>VACCheckerService</strong> analysiert Steam-Profile, Freundeslisten und Avatar-Verläufe,
+      um Ban-Evader zweifelsfrei zu identifizieren, bevor sie wieder auf eurem Server spielen.
+    </p>
+    <div class="hero-ctas">
+      <a href="#report" class="btn btn-primary">Verdachtsfall melden →</a>
+      <a href="#scan" class="btn btn-ghost">Wie die Analyse abläuft</a>
+    </div>
+  </div>
+</section>
+
+<section class="scan-section" id="scan">
+  <div class="wrap">
+    <div class="section-label">Live-Beispiel</div>
+    <div class="section-title">So sieht ein Scan aus</div>
+
+    <div class="terminal">
+      <div class="terminal-bar">
+        <span></span><span></span><span></span>
+        <div class="label">vaccheckerservice — scan_log.active</div>
+      </div>
+      <div class="terminal-body" id="terminalBody"></div>
+    </div>
+  </div>
+</section>
+
+<section class="process">
+  <div class="wrap">
+    <div class="section-label">Vorgehen</div>
+    <div class="section-title">Drei Schritte bis zur Bestätigung</div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-tag">01 — MELDUNG</div>
+        <h3>Ihr meldet den Verdacht</h3>
+        <p>Ein Profil-Link genügt. Auffälliges Verhalten, ein Smurf-Verdacht oder ein zu sauberes Profil reichen als Ausgangspunkt.</p>
+      </div>
+      <div class="step">
+        <div class="step-tag">02 — ANALYSE</div>
+        <h3>Wir ziehen die Historie</h3>
+        <p>Freundeslisten, Gruppenmitgliedschaften, Avatar-Verläufe und Namenswechsel werden gegen bekannte VAC-Bans abgeglichen.</p>
+      </div>
+      <div class="step">
+        <div class="step-tag">03 — BEWEIS</div>
+        <h3>Ihr bekommt die Kette</h3>
+        <p>Kein Bauchgefühl — eine dokumentierte, nachvollziehbare Indizienkette, mit der euer Admin-Team sanktionieren kann.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="warning">
+  <div class="warning-inner">
+    <div class="warning-mark">!</div>
+    <p>Ein neuer Name und ein leeres Profil sind keine Tarnung. <span>Avatare, Gruppen und Freundeslisten hinterlassen Spuren</span> — und diese Spuren werden ausgewertet, nicht ignoriert.</p>
+  </div>
+</div>
+
+<section class="report" id="report">
+  <div class="wrap">
+    <div class="section-label">Fall melden</div>
+    <div class="section-title">Verdachtsfall einreichen</div>
+
+    <div class="report-grid">
+      <div class="report-text">
+        <p>Je konkreter die Angaben, desto schneller die Analyse. Ein Steam-Profil-Link plus kurze Beschreibung des Verdachts reicht als Start — den Rest übernimmt die Auswertung.</p>
+        <p>Es entsteht kein öffentliches Ticket. Die Angaben gehen ausschließlich an das Analyse-Team.</p>
+        <div class="highlight">
+          Antwortzeit: in der Regel innerhalb von 24–48 Stunden.
+        </div>
+      </div>
+
+      <form action="mailto:vaccheckerservice@web-library.net" method="POST" enctype="text/plain">
+        <div class="field">
+          <label for="reporter">Dein Name / Discord-Tag</label>
+          <input type="text" id="reporter" name="Melder" placeholder="z.B. Manuel#0001" required>
+        </div>
+        <div class="field">
+          <label for="suspect">Profil-Link des Verdachtsfalls</label>
+          <input type="text" id="suspect" name="Verdaechtiges_Profil" placeholder="https://steamcommunity.com/profiles/..." required>
+        </div>
+        <div class="field">
+          <label for="linked">Vermuteter verknüpfter Account (falls bekannt)</label>
+          <input type="text" id="linked" name="Verknuepfter_Account" placeholder="Optional">
+        </div>
+        <div class="field">
+          <label for="details">Beschreibung des Verdachts</label>
+          <textarea id="details" name="Beschreibung" placeholder="Was wurde beobachtet? Cheating, Namensähnlichkeit, gemeinsame Gruppe, Avatar-Übereinstimmung, ..." required></textarea>
+        </div>
+        <div class="submit-row">
+          <button type="submit" class="btn btn-primary">Meldung absenden →</button>
+          <span class="form-note">öffnet dein E-Mail-Programm</span>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <div>© VACCheckerService — Community Anti-Cheat Analysis</div>
+    <div>STATUS: <span style="color:var(--red)">ACTIVE</span></div>
+  </div>
+</footer>
+
+<script>
+  const scans = [
+    { id: '76561199084098166', name: 'denik', status: 'clean' },
+    { id: '76561198317714146', name: 'Manuellsen', status: 'clean' },
+    { id: '76561199029211252', name: 'dennyE', status: 'ban', flag: 'Avatar-Match mit "denik" → BANNUMGEHUNG' },
+    { id: '76561198417369910', name: 'gustelputsch', status: 'clean' },
+    { id: '76561199157276802', name: 'gustelputsch', status: 'ban', flag: 'Identischer Anzeigename → BANNUMGEHUNG' },
+    { id: '76561199029873407', name: 'Maxellputsch', status: 'clean' },
+  ];
+
+  const body = document.getElementById('terminalBody');
+  let i = 0;
+
+  function renderLine(entry, delay){
+    setTimeout(() => {
+      const row = document.createElement('div');
+      row.className = 'scan-line' + (entry.status === 'ban' ? ' flagged' : '');
+      const statusText = entry.status === 'clean'
+        ? '<span class="status-clean">CLEAN</span>'
+        : '<span class="status-ban">VAC BANNED</span>';
+      row.innerHTML = `<span class="id">[${entry.id}]</span> <span>${entry.name}</span> → ${statusText}${entry.flag ? ' — ' + entry.flag : ''}`;
+      body.appendChild(row);
+    }, delay);
+  }
+
+  scans.forEach((entry, idx) => renderLine(entry, idx * 650));
+
+  setTimeout(() => {
+    const cursorRow = document.createElement('div');
+    cursorRow.className = 'cursor-row';
+    cursorRow.innerHTML = 'scanning next batch <span class="cursor"></span>';
+    body.appendChild(cursorRow);
+  }, scans.length * 650 + 300);
+</script>
+
+</body>
+</html>

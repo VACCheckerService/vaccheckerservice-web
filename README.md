@@ -30,7 +30,7 @@ Aus diesen Spuren entsteht eine nachvollziehbare Indizienkette, mit der Communit
 
 ## Über dieses Repository
 
-Dieses Repo enthält die statische Webseite (`index.html`) für VACCheckerService, gehostet über **GitHub Pages**.
+Dieses Repo enthält die statische Webseite (`index.html`) & (`busted.html`) für VACCheckerService, gehostet über **GitHub Pages**.
 
 **Features der Seite:**
 - 🌗 Dark, tech-noir Design im Analyst-Terminal-Stil

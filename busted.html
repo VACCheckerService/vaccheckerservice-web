@@ -116,7 +116,7 @@
   .case-card.open .case-body{ max-height:900px; border-top:1px solid var(--panel-line); }
   .case-body-inner{ padding:20px 22px 24px; font-size:14px; }
 
-  .doc-grid{ display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:18px; }
+  .doc-grid{ display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:20px; margin-bottom:18px; }
   .doc-col h4{ font-family:var(--mono); font-size:11px; color:var(--muted); letter-spacing:1px; text-transform:uppercase; margin-bottom:8px; }
   .doc-col p, .doc-col a{ font-size:13.5px; color:var(--text); word-break:break-all; }
   .doc-col a{ color:var(--blue); text-decoration:none; }
@@ -428,70 +428,76 @@ cases: [
   let currentFilter = 'all';
   let currentSearch = '';
 
-  function renderCases(){
-    const dict = i18n[currentLang];
-    const list = document.getElementById('caseList');
-    list.innerHTML = '';
+ function renderCases(){
+  const dict = i18n[currentLang];
+  const list = document.getElementById('caseList');
+  list.innerHTML = '';
 
-    const filtered = dict.cases.filter(c => {
-      const matchesFilter = currentFilter === 'all' || c.method === currentFilter;
-      const q = currentSearch.toLowerCase();
-      const matchesSearch = !q || c.mainName.toLowerCase().includes(q) || c.bannedName.toLowerCase().includes(q) || c.mainId.includes(q) || c.bannedId.includes(q);
-      return matchesFilter && matchesSearch;
-    });
+  const statusEmoji = { vac: '🔴', suspicious: '🟢', unknown: '⚪' };
 
-    document.getElementById('statTotal').textContent = dict.cases.length;
-    document.getElementById('statAvatar').textContent = dict.cases.filter(c => c.method === 'avatar').length;
-    document.getElementById('statName').textContent = dict.cases.filter(c => c.method === 'name').length;
+  const filtered = dict.cases.filter(c => {
+    const matchesFilter = currentFilter === 'all' || c.method === currentFilter;
+    const q = currentSearch.toLowerCase();
+    const matchesSearch = !q || c.accounts.some(a =>
+      a.name.toLowerCase().includes(q) || a.id.includes(q)
+    );
+    return matchesFilter && matchesSearch;
+  });
 
-    if(filtered.length === 0){
-      list.innerHTML = `<div class="no-results">${dict.noResults}</div>`;
-      return;
-    }
+  document.getElementById('statTotal').textContent = dict.cases.length;
+  document.getElementById('statAvatar').textContent = dict.cases.filter(c => c.method === 'avatar').length;
+  document.getElementById('statName').textContent = dict.cases.filter(c => c.method === 'name').length;
 
-    filtered.forEach((c, idx) => {
-      const card = document.createElement('div');
-      card.className = 'case-card';
-      card.innerHTML = `
-        <div class="case-head">
-          <div>
-            <div class="case-id">${c.caseNo}</div>
-            <div class="case-title">${c.title}</div>
-          </div>
-          <div class="case-meta">
-            <span class="badge method-${c.method}">${c.methodLabel}</span>
-            <span class="case-date">${c.date}</span>
-            <svg class="chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </div>
-        </div>
-        <div class="case-body">
-          <div class="case-body-inner">
-            <div class="doc-grid">
-              <div class="doc-col">
-                <h4>${dict.labels.mainAccount}</h4>
-                <p>${c.mainName}</p>
-                <a href="https://steamcommunity.com/profiles/${c.mainId}" target="_blank" rel="noopener">steamcommunity.com/profiles/${c.mainId}</a>
-              </div>
-              <div class="doc-col">
-                <h4>${dict.labels.bannedAccount}</h4>
-                <p>${c.bannedName} 🔴</p>
-                <a href="https://steamid.uk/profile/${c.bannedId}" target="_blank" rel="noopener">steamid.uk/profile/${c.bannedId}</a>
-              </div>
-            </div>
-            <h4 style="font-family:var(--mono); font-size:11px; color:var(--muted); letter-spacing:1px; text-transform:uppercase; margin-bottom:10px;">${dict.labels.chain}</h4>
-            <ul class="evidence-chain">
-              ${c.chain.map(step => `<li>${step}</li>`).join('')}
-            </ul>
-            <div style="margin-top:16px;"><span class="badge">${dict.labels.status}</span></div>
-          </div>
-        </div>
-      `;
-      card.querySelector('.case-head').addEventListener('click', () => {
-        card.classList.toggle('open');
-      });
-      list.appendChild(card);
-    });
+  if(filtered.length === 0){
+    list.innerHTML = `<div class="no-results">${dict.noResults}</div>`;
+    return;
   }
+
+  filtered.forEach((c) => {
+    const card = document.createElement('div');
+    card.className = 'case-card';
+
+    const accountsHtml = c.accounts.map(a => `
+      <div class="doc-col">
+        <h4>${a.role}</h4>
+        <p>${a.name} ${statusEmoji[a.status] || ''}</p>
+        <a href="${a.url}" target="_blank" rel="noopener">${a.url.replace('https://','')}</a>
+        ${a.analysisUrl ? `<br><a href="${a.analysisUrl}" target="_blank" rel="noopener">${a.analysisUrl.replace('https://','')}</a>` : ''}
+      </div>
+    `).join('');
+
+    card.innerHTML = `
+      <div class="case-head">
+        <div>
+          <div class="case-id">${c.caseNo}</div>
+          <div class="case-title">${c.title}</div>
+        </div>
+        <div class="case-meta">
+          <span class="badge method-${c.method}">${c.methodLabel}</span>
+          <span class="case-date">${c.date}</span>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+      <div class="case-body">
+        <div class="case-body-inner">
+          <div class="doc-grid">
+            ${accountsHtml}
+          </div>
+          ${c.groupUrl ? `<p style="font-family:var(--mono); font-size:12.5px; color:var(--muted); margin-bottom:14px;">Gruppe: <a href="${c.groupUrl}" target="_blank" rel="noopener" style="color:var(--blue);">${c.groupUrl.replace('https://','')}</a></p>` : ''}
+          <h4 style="font-family:var(--mono); font-size:11px; color:var(--muted); letter-spacing:1px; text-transform:uppercase; margin-bottom:10px;">${dict.labels.chain}</h4>
+          <ul class="evidence-chain">
+            ${c.chain.map(step => `<li>${step}</li>`).join('')}
+          </ul>
+          <div style="margin-top:16px;"><span class="badge">${dict.labels.status}</span></div>
+        </div>
+      </div>
+    `;
+    card.querySelector('.case-head').addEventListener('click', () => {
+      card.classList.toggle('open');
+    });
+    list.appendChild(card);
+  });
+}
 
   function applyLang(lang){
     currentLang = lang;

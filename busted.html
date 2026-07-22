@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Busted-Datenbank — VACCheckerService</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #05070a;
+    --panel: #0d1520;
+    --panel-line: #1b2532;
+    --blue: #3b82f6;
+    --red: #ef4444;
+    --red-glow: rgba(239,68,68,0.35);
+    --text: #e8edf5;
+    --muted: #8b98a9;
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'Inter', sans-serif;
+  }
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  body{ background:var(--bg); color:var(--text); font-family:var(--sans); line-height:1.6; overflow-x:hidden; }
+  body::before{
+    content:""; position:fixed; inset:0;
+    background:
+      radial-gradient(ellipse at 20% -10%, rgba(59,130,246,0.10), transparent 45%),
+      radial-gradient(ellipse at 90% 10%, rgba(239,68,68,0.08), transparent 40%);
+    pointer-events:none; z-index:0;
+  }
+  body::after{
+    content:""; position:fixed; inset:0;
+    background:repeating-linear-gradient(to bottom, rgba(255,255,255,0.012) 0px, rgba(255,255,255,0.012) 1px, transparent 1px, transparent 3px);
+    pointer-events:none; z-index:1; opacity:0.5;
+  }
+  a{ color:inherit; }
+  .wrap{ max-width:960px; margin:0 auto; padding:0 24px; position:relative; z-index:2; }
+
+  header{ border-bottom:1px solid var(--panel-line); background:linear-gradient(180deg, rgba(13,21,32,0.8), rgba(13,21,32,0.3)); }
+  .header-inner{ display:flex; align-items:center; justify-content:space-between; padding:16px 24px; gap:16px; flex-wrap:wrap; }
+  .brand{ display:flex; align-items:center; gap:12px; font-family:var(--mono); font-weight:800; font-size:17px; letter-spacing:0.5px; text-decoration:none; }
+  .brand-mark{ width:38px; height:38px; border-radius:50%; border:1.5px solid var(--blue); overflow:hidden; flex-shrink:0; position:relative; }
+  .brand-mark img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .brand-mark::after{ content:""; position:absolute; inset:-4px; border:1px solid rgba(59,130,246,0.25); border-radius:50%; }
+  .header-right{ display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
+
+  .pill-link{
+    font-family:var(--mono); font-size:12.5px; display:flex; align-items:center; gap:8px;
+    border:1px solid var(--panel-line); padding:7px 12px; background:rgba(255,255,255,0.02);
+    text-decoration:none; color:var(--muted);
+  }
+  .pill-link:hover{ color:var(--text); border-color:var(--blue); }
+
+  .live-pill{
+    display:flex; align-items:center; gap:8px; font-family:var(--mono); font-size:12px; color:var(--red);
+    letter-spacing:0.5px; border:1px solid rgba(239,68,68,0.3); padding:6px 12px; background:rgba(239,68,68,0.06);
+  }
+  .live-dot{ width:7px; height:7px; border-radius:50%; background:var(--red); box-shadow:0 0 8px var(--red-glow); animation:pulse 1.6s infinite; }
+  @keyframes pulse{ 0%,100%{ opacity:1; } 50%{ opacity:0.3; } }
+
+  .lang-switch{ display:flex; font-family:var(--mono); font-size:12px; letter-spacing:0.5px; border:1px solid var(--panel-line); overflow:hidden; }
+  .lang-switch button{ background:transparent; border:none; color:var(--muted); padding:7px 12px; cursor:pointer; font-family:var(--mono); font-size:12px; transition:background 0.2s, color 0.2s; }
+  .lang-switch button.active{ background:var(--blue); color:#05070a; font-weight:700; }
+  .lang-switch button:not(.active):hover{ color:var(--text); }
+
+  .page-head{ padding:60px 0 36px; border-bottom:1px solid var(--panel-line); }
+  .eyebrow{ font-family:var(--mono); font-size:12px; color:var(--muted); letter-spacing:2px; text-transform:uppercase; margin-bottom:18px; display:flex; align-items:center; gap:10px; }
+  .eyebrow::before{ content:""; width:24px; height:1px; background:var(--red); }
+  h1{ font-family:var(--mono); font-weight:800; font-size:clamp(28px, 4.5vw, 42px); line-height:1.1; letter-spacing:-0.5px; }
+  h1 .accent{ color:var(--red); }
+  .page-sub{ margin-top:18px; max-width:64ch; color:var(--muted); font-size:15px; }
+
+  .stats-row{ display:flex; gap:1px; background:var(--panel-line); border:1px solid var(--panel-line); margin-top:32px; }
+  .stat{ flex:1; background:var(--bg); padding:18px 20px; }
+  .stat-num{ font-family:var(--mono); font-size:26px; font-weight:800; color:var(--red); }
+  .stat-label{ font-family:var(--mono); font-size:11px; color:var(--muted); letter-spacing:1px; text-transform:uppercase; margin-top:4px; }
+
+  .controls{ padding:30px 0 0; display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
+  .search-box{
+    flex:1; min-width:220px; background:var(--panel); border:1px solid var(--panel-line); color:var(--text);
+    font-family:var(--mono); font-size:13px; padding:11px 14px; outline:none;
+  }
+  .search-box:focus{ border-color:var(--blue); }
+  .search-box::placeholder{ color:#5b6b80; }
+  .filter-btn{
+    font-family:var(--mono); font-size:12px; letter-spacing:0.5px; padding:10px 16px;
+    border:1px solid var(--panel-line); background:none; color:var(--muted); cursor:pointer; transition:all 0.2s;
+  }
+  .filter-btn.active{ background:var(--red); border-color:var(--red); color:#05070a; font-weight:700; }
+  .filter-btn:not(.active):hover{ color:var(--text); border-color:var(--blue); }
+
+  .case-list{ padding:26px 0 80px; display:flex; flex-direction:column; gap:14px; }
+
+  .case-card{ background:var(--panel); border:1px solid var(--panel-line); overflow:hidden; }
+  .case-head{
+    display:flex; align-items:center; justify-content:space-between; gap:16px;
+    padding:18px 22px; cursor:pointer; user-select:none; flex-wrap:wrap;
+  }
+  .case-head:hover{ background:rgba(255,255,255,0.02); }
+  .case-id{ font-family:var(--mono); font-size:11px; color:#5b6b80; }
+  .case-title{ font-family:var(--mono); font-weight:700; font-size:15px; margin-top:3px; }
+  .case-meta{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .badge{
+    font-family:var(--mono); font-size:11px; letter-spacing:0.5px; padding:5px 10px;
+    border:1px solid rgba(239,68,68,0.3); color:var(--red); background:rgba(239,68,68,0.06);
+  }
+  .badge.method-avatar{ border-color:rgba(59,130,246,0.3); color:var(--blue); background:rgba(59,130,246,0.06); }
+  .badge.method-name{ border-color:rgba(232,185,59,0.3); color:#e8b93b; background:rgba(232,185,59,0.06); }
+  .case-date{ font-family:var(--mono); font-size:11px; color:var(--muted); }
+  .chevron{ transition:transform 0.2s; color:var(--muted); flex-shrink:0; }
+  .case-card.open .chevron{ transform:rotate(90deg); }
+
+  .case-body{ max-height:0; overflow:hidden; transition:max-height 0.3s ease; border-top:0 solid var(--panel-line); }
+  .case-card.open .case-body{ max-height:900px; border-top:1px solid var(--panel-line); }
+  .case-body-inner{ padding:20px 22px 24px; font-size:14px; }
+
+  .doc-grid{ display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:18px; }
+  .doc-col h4{ font-family:var(--mono); font-size:11px; color:var(--muted); letter-spacing:1px; text-transform:uppercase; margin-bottom:8px; }
+  .doc-col p, .doc-col a{ font-size:13.5px; color:var(--text); word-break:break-all; }
+  .doc-col a{ color:var(--blue); text-decoration:none; }
+  .doc-col a:hover{ text-decoration:underline; }
+
+  .evidence-chain{ font-family:var(--mono); font-size:12.5px; color:var(--muted); border-left:2px solid var(--red); padding-left:14px; }
+  .evidence-chain li{ margin-bottom:7px; list-style:none; }
+  .evidence-chain li::before{ content:"→ "; color:var(--red); }
+
+  .no-results{ text-align:center; padding:60px 20px; color:var(--muted); font-family:var(--mono); font-size:13px; }
+
+  footer{ border-top:1px solid var(--panel-line); padding:26px 24px; }
+  .footer-inner{ max-width:960px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; font-family:var(--mono); font-size:12px; color:#5b6b80; flex-wrap:wrap; gap:10px; }
+
+  @media (max-width:720px){
+    .stats-row{ flex-direction:column; }
+    .doc-grid{ grid-template-columns:1fr; }
+    .header-inner{ justify-content:center; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap header-inner">
+    <a href="index.html" class="brand">
+      <div class="brand-mark"><img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBAUEBAYFBQUGBgYHCQ4JCQgICRINDQoOFRIWFhUSFBQXGiEcFxgfGRQUHScdHyIjJSUlFhwpLCgkKyEkJST/2wBDAQYGBgkICREJCREkGBQYJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCT/wAARCACgAKADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD5h2A9RR5QPagSD2qRWFdCMRggFL5WO2amXFSBQadhNlYRj3FBjAH3h+NWivpzTPKJ5z+lFhXKuBnjBqQAL9449hUxg9VBprKVxjIosFxm7PQcU5I95wA2fbmpxGvp+YqWHcqsVTj1HaqSE5DYrB35zgVagssfdG457n+lXdMsxd3EccjlAxwWccCvWbHwd4F0OJJdW186hLjPkadFkfQu+B+QNdVOlfU4q2I5NDyW30e5lYBIWP4V13h34V6/4hYfZdMuHXvJsOxfq3QV27fEDw/oS7fD/huyiYdJ7z/SJPrz8o/75rH1Tx74r8Sgo1zdyxdkT5Y1/DhRXQqSRyOvUlsrDB8PNB0Nj/bWrxiRDgwwDe2fTPSsbxPf+F00+Sz03S3ZyOJ5X+YfgKY+j390+64uoYz3Ckyt+Q4/WqF5o8SGQjzJhGdrFxt5wD0/GlKOhUHrqziJocsef61EYQP4CfrxW/eyWsOQGjXHZaxprmMk7VLVxTikelCTZWI298fSoz9PzqX5nzlcCorhfnUEkAjnFYs2QqxKewqRbZT2pFjOQMds1KkZOOtNITZHDGRKy81PGjszbY2cDrg02NWFyoH8VaNjGymXHGce3rVRjcmUrFUJt+9BMv8AwGlAhIwrNu9CK2IrWR8BVZiew5pJNJuLi6SOG3kd0QllA5A7cVpyGfOZQj3FQB1OKbcWpC9uh/x/pWobGSGREkjZHV8FWGCPqKdPaMUOByOR9aOQFMz/ACj5e7aemabbR/LsPVjxVqD50kiI9dp9R/iKWFcpvVMyJMPlJx17UJA2W4544G2hzuHYDpV6PUN6gNz9TWETvuX3sYhk54yR/KptseflMrL6txmtozsYyp33Ojtr6OBWl2oFAzkLkjn8an/4SsAYjtZblu248f1rBWULauo6bcY/EVba8UszLG+3K/dXABx09P0rX2jMXSXVFyXXNdvfliSC1TrjjOPx/wAKz/E8xlh2gnBuuRnGRsHWplkncZiQKGVjl5D0HXgVlaxL+66k/wCkE8n/AGKicnyu5dOCUlZEJ06JI1Y27An+Jn3Bvpjk1TmiUMdqgEdgK04XZbeGBJAhUbt5Vmbn/ZA4696z55ZW67gM7dzYAP6VztaHQm7lWQSbQJFC4HHHWqd399PpV+Z2cAMykquMCqU5CyxsV3Adj3rGWxtC5bjVd6kccYp4jwikAk5546Cp7e3WSSMKpOeMe9TxW7Nbt9zPmD1z0P6VuoGLnYrRQBtQQKPl3HHGOKuXVwmkQtg5upFDIoGdgPRj+HIH0NWVtmGrIHAB3tkKcgdazPEoVNTYYIKogb/e2iia5IhB88tSlLeXsyETXUzr12lyRTrOV4iJlfcw5AJ6nt9cf0qqzFyEAJPtVi5/dR2552gsB6Acf/XrnudNlsakHiG8hUvdrDeJHgAzD5i3b5hg/rj8qvWWq/b5GWW18nPzDacoBjPU1hGFr1razjIBP7xj7np+Q/nXaS+BNU8O2+nX7XMc9nfq6gbceWy4HPr1zVwnLm5UZzpxUeZmNcWe2VwrbN4JHGQSP64xzVNYpELENndJggFjmuhubESqUzgquck46D+dQQ6NHFqCQS30boXGZowWVflyeOPp+FdjpO5x+2ilqYKeWlx++OEyc9R/TNOe6RyPLh2AZwMk4/OrF5bFJ5VfABfAk5IX8qiMVuJFMauyg8qxzu/HjArFxaZqpLcXzSbd88ZH9RVp725jlYPG6PuV8NwQQOOvPSopbSedHeK1aNCB8qKSq/nmriaJrd8XH2a4bO1mG3A7hc9B6gVVmyG47uxFF9qn2qFCrtYqWDMCB1xWfqcm6PP/AE2z/wCO1vReEdTccpGu3j95IowffJrNv9JMVy9rPPCjI+S27I+6P8f51FRuMbs2w0Y1Z8sHqQW8kxt1SP7S0Q5CxrwD7Emo5b1vl3wzk9R5jn/CtBLOyhAV9RUrnOI9xGO/Q0qRacNjASSBh8xWM4U49xXK8Qntc9T+zGneTS+aMJwsm4rGEPOcHiqlzGwePjnFdURb4YQWpeTkIc5+mQCf5VSutIvLuZJDAECjGDwKIuc9ok1KVGktZpvyLdtcy2Vg1lNZJNbtMnnSIvzgZB2h/wCHPStzU5fCs1i6aXomsWV5kFWnu1kQDvkbAenvWIJdJubeQImpwXDuBFBCVMLYx94k5zye3pT7a3M8nyJO5yF5O459P0NehBs8OavrqmS2MEj6jB5obczfxZyeDWD4lV59ZuZCMRx7Sf8AeI6fnn8q68NHbXdrJM8yKnVpzgD6H0rj/FGo/ar944ogkaHccH/WMRkn+g9h9amvbkNMPzOb0KOnqskN1IcF48HBHbpn8P61r26W8ui3qzINxjJidRwWyuP6/kPSubDvF+/hYrk4JHvV22nlluTDJkxK5f6EHr/KuOMrHbKLZvaRo2pTF7qyso7ggbiATvCjgf06V39hreqa54agsbywSM2U8qxeWTvIwobcvIHOOQex4qH4YXYsNVt7ky7DGB8wxj8c1b+2TQajq7zxllmuHmhYbdhHmHkH0Oc9O2KrCv8AeJsMdH9y0noZk9rMkUiiykZmGNxGMH25/Css6VNGyGGGfLcyBig59BzyOlXLm8trmS4eWzUuFLEmUjJ/Cs/+0YIEjaGyWNnBDMJW55r0qlRXPHpxdhG043t6fsq28BRR5izTqAGBIP3jg5IzgZrUt4tSsR5cF9pSF3JCwMjnkk4ACkAc9qxtNuooNTu3a1hlBVtvmMwCHc3cEfrmrFvHc3V07pLDZ20aghssoVj0UYyf/wBfvXNOq1ayvc7aeHhKMnUdkvK5buvOMgF5q4V4wBsweB1xgKKhItWJL6pPISMHaknI9PvVWijljvJ7fVbvy3TlWWfyw4PIOSGzxioI7+0maSMW9656qzXgG0Yxz8vPP0rnljGvs/iejSymEkuWTd+yRdaHTep+2SfSFf65oSHTZJApt7hf9qRgij/vkVUe1+0MoVHjKrllDn5vfLcj8BUnkW8KkxtG5X7xQbgPYk59/SueWY9FFHqUeHbrmlJr7g177LBpTm2gIO5VMizSMFyTwcgCo9F1S1tbCCOe2tWk5zI1uJJMZ9WPp04qldXJHh+W2G0oZw+7uSOB+FdB4G0S0137TGAy3ttEZ0eRwsQXIAyexyetdMKsf4k7JW+W542KpunenG719XsVdS1hkRUtfttvkkhpEA3LjsAo7981ju1zdhnXz58HDH3rs9A0+08U6s8OrXAkgskNrFsckyk5+bPU/d/l6V2M+nafo+ms0caQ28RwnGN7HnHueCcn0q5YulzSi3t5HnSVSnyJRu5bf1ueKWcLEQOJMBpyACOFPy8/r+laQmTT7SeSZ9vmI6xc4DH7pPXJADN7Zqlpn2ZLiHzohKiSb5OvzoBnb+h/OqGq+IZNRuJZHs7PcflBWIcKOgHoParlNRibRg5S8jNjupBIWilmTPZCaSXEh3SNlv7wODULTM7bS2T/AHV6CvbvBml2Mdl4VsNE0nw9DrWraTNfDUtTtmuXluI5pF8qNWJjQ7UGCVPNcq1OqT5Vc8mk8Ja3aaKNXm0m+TSrnKx3bQsIyR3z6e/T3qtbxPKkskSlnZVGAM98n+VeoaN4o8SeJH1bUbzU5rF9KSWa7urmeR2xhVWDYfkJJUjbt28dBWNLf29/oerX9xpOmW97bC2eG7sI2h88StzuQHbnAOeBzmt1Rutzk+tSUmmuq/H+v+AUvCt99n1W0TUmmsAGAYyQllkU+qnGfrXV3FwjPK24dMDbwD06AtWXJY6ptkUyRSLFb29yrBiRIJ2CxqnHLEnpx901Jc6Hqdpql9ZXGpafBHZWy3c128jGHyy4UYKgkndx06g1rSpKm7oyrYpVUot2/r/gmWZRIbliQCyN3/8Arj+v0qtJKjWsKM5BHIAGc/Xnj8q3I/A2oOkrya5oUDTSy29sslyw+1siLI2xgu0DDL94jk4rN1Dwjr9lPaQfY7i6jmWMwTQxsUkLxiTaM9wM56fdPpSneTKhOMeu5m21wYbmZgAc5HUj+JvSrUOqGwuTus7e8QDhZjlQSOTjueBz2qD/AIRzxCpvX/sW/wAWx3S/uj8gwX/H5TnjtV288Pa/Y6rLp8Fi98yMUEsCEo5CK7Yz6Bhk9s1jVU9HFHXQnQlzQqy0fmZ+ybVZGcyQReWFUCSTovRRnvwKIrSa0ugC0L9sxyAg5HY9PStvwv4X8V6lrMWnW+kywSXU32Uz3LSRRxOuSQzKc8emD2xV640HxK979i0SGLxHviW4eTSbm4cRguUCyByrI25ThWAJ4xXLKm9pHp0sZGDXs9UjnLqe5fljAoIwGkcN+XGP0rMuZJTJtlmEpHo24D6dq29W0TxPcaOmoTeGtStrCKNphcOZGQRqcEjcTgA9cdKRfhz4pkW1SDR76e8n84vaJbuHhWMoCWJAXnzF6E4yM4JqI0VE6KmYSqfEZNyf+JP9XH8z/hV/w9fTWV7Ekc5hS6RbeVgcfI2Mn8OD+FJqPhXxLZ+HpL660LUYLKCXbLPJCVWMq5Q5z0w/y59eKNP0q/b7Jcx2ryIdjqMffxjiuunTUo8r1PIxVVqTlF2/4Y7fQG/4RHUNe0YOsxtYzdLOmMttA2qQeh+b881zN54g1bxFpQgmnkkFn+9YBDjAUDcxH49f7xqrcWuuPdXc0kdwJbosJztIL5OSDx6gflTLJ9X0lbhLdXjS4jMUqkDDqQR3+prRUNnNXZ56bTbiylZRvKghii3Su4SNh1LHA2n1B/rXN6nY3Fhey2RILRsVLqcqeeoPcV02lXcNnMLxJ0kMUbOAAQyvtwMj0BOcjI47VlajcbraIt9+QlvoueBSq2aOmk2pGbHEsKcfiT3r0HwpMbrwVNPpMnka5odx9pc5yXtiysrgHoEdSGx2kyeleeysdqt2q3pGsXuhajDqGnXDQXMRyrjkEHqCOhBHBB61lGXK9DWcVJanoPjDXl1PTUj0aH7ONWn+36i4AKrIABsY9Bg5PPHfvWTrJSPSdN0+ZlN4wWVm2hNsQ4UEADG5ixGe2KpT+K9HMa3Nt4eigv8AzDKY95NqshAG9U/D7vQVRsLxrrVTcahN5klyctLJ91s8Yb/ZPT2/Cu2deMter/A4YYdw0Wy/E6nTtc1FI9L02KwjlawkNx5sk6xB1jDtGGLYACFyeT6Ve2+JNRsWt73w1HcRyWzW00llcRxAIX84A4yFIKPnPr6kZoCzuk4t5pYp7clFkVsOQRjn1yuM+5NVppdUwFfVNRYqAo2ynp/XqetDnVtpsTGnQveS1NObT9Sljg0u58D/ACQy3FxaWn2tVUbgqNuXq3Kg9sk8VLaaj4ltbqRzoyM8jxhojeRh8RWrRN8p/wBli2SMAA54zXOS3WsCNohqWpFG4IaQnI/nVSebUrmRpLi+upHYsSzuSSWUq3PuCR+NZqdVa/oa+zotWa/E6SW61fW9LEj+HrmS0Ef2u3l+3LGI08ow7mwB8v7snA29uxGbl1r2vT6pILzRYt0dtLb+YLqIRpCWVWUuQYy3mRnryckY6Vydrc6pNE1r/a12kMYMSoZTtCbdhUD028Y9KtwxXglE66rcrNtZS4bPDMWP5kk/Xmj21XuV9VovS34m8zeJZdZ0m7u/D1w4t7+Ro4WvvKkleTgAOpBUjyyQw44z0reg+I2uTXxhOgXN6VtLORppNSilumCzs0TySshBOZcdAygZyME1wMb+IHEiWuo3zqjkkrJ8wJzkjuM7jnHrSw2fiVbh2iuL6OSXAkkEmA4GQMnoQNx/OolTnN8zKjVpUlyJ2sdLca94isvEOn65qPh4tbWFm+l3drNcrtuI33O4Zv4ciYHODyPY4vrrniXULS4sNa8NyXcV9Jd/aRHqCQybpbmKbAJB27WRVwR37YrjtRk1vTpWtZNXup0KBQpkJUrjaBg8dOKgSbX4Yyw1C7jjLPKQX6sGG7Pqckdah0ZbWLjiINJ30Zta/wDEqa68N3WgNpMlq5WSy3i7EgWP7SZtrEqXcg8ZL4OM4zWTC9rDZWxjNyk4TOeCpI/pWRrcc8YkF1v+0ecxlLnLF+SSffOa1GiC2cBIOcNg9sVdNcraJqtTSZbl1K7SIbZrhSMncIyPwJGKrL4g1BeDM/4n/GmSWkjQrJCqneM5UsG+mMnNUpRKCTKJCT3bOauMn3MnGPYwLKcQyDexAz94dV9xTtTkIePBG0rhcdB/n+tVAeQakuv3lmpPVG/z/SuRvSx3W1G+d8qo3QjGfQ0kbncV/Kq6tldh/CnRvyPUGoUimi0Dk81d090kP2W4YIp5jkPRD7+3rWex54q1aGOceWzBJB0J6GrT1M2tDuntbibSoZJVbzoj5DJ1JBXKHjrwrAHuAKrN4e1CVWZLO7x67Dj+VJ4cvb61RbW5edbF2CC5jJzbMejZHbk5HcE9+afdSajveOeLzGVirEy5OQcHqK6JObXuk4f2Mbqre/kYlrBd3FwIY3ZnbhQvUn0q1NZ6rprg3Ed1Hg8FlZQfxNSadpmoXN0EtbK4nYcMEAIA9znj6mt77F4i0pTsgubZQMnMw5HsoJzWUnNP3TroQw04fvdGcva3tzEfJQR/O2SXAxnpkkjinvqbRSMksaAjrtwR+YrWOuQu3+mW+nz56syBWP8AwJcH9aQnw9dj545LcnvFOrr+TDP60vazjuingqNR3hUXz0/4BQh1eEcLKYieT1Gf51cj1hh9y8U/Uj+uKp3+laW0LGy1VJWx8sLQsGP0K7h+ZFZV3oN1ZwRzzhVjkJCFZFJyPUA5H4gVccW72X+Rz1srcU5NXS9GdKt+Tc/aZQkp2lcEcY9c81ozeII7y2nge22iUOCUZT96RWPp/drgobdlSVy7/KARz05pyy3C9JW9eea0WKadmck8sUkpfcbvje7hv74z28JiSRy2GXaSfU/n1qW5U+VDkjb5TY/WsO9vY7iK3G6Qsq/Pvboc87fQYxV5PEUTjFzAkgxgMBtI/LiiVRKo23uXDDSjSjGK2LbHYilZIGYLnYRtZfxB5qF747SDuGf9rcP15/WkXVLecYE5+kmGH61DPJG7YXyif9nI/nRozJxa3RyjDqKmU742X+8M/j/+uo3GDSRttfnpXK9ztK4Gc5oyc5BqS4TZLuHRufxpu0EZFZ26F3JkbfH7inptDAnI9x1qtG/lt7HrU5OOlUmS0dLouoXlkwaKXfEwwSDwR6Ef0rc1HX2iubHUxFA9lcSsskDoNvmLjdg8HadwOM+o6VwcFxIiNEhxvI59K6bRtWge3m0+RfMs2VE2tz8+4fMvoQN3PufWuiE7rlucs4cslOx2E3jyC4smtUmjsoWU4FvGNi/VeBXLnVbyzIn0/wAQm6myCINjfvD6AZI/A1MlpoH2X7Vjap2nBB3KrAfMcHkAnBwPwqa78L2NszNbXaJIELhbdy3mgdcBwFb6ZpKg973LeMjtawn2hr0vLPALdn5ZFJGD3waaLWyDAy2xkAPIZzzx68kfkak08WmoWZnGrSKtuSsiTQ4dORghQxGOxwRj8a09B/sK7vzb3t++xF3BViCtIR1AOSF9uv8AWui8VG7OW8pStHcZbR6SoIjspoioy22MygD1OOQPqoqn4isPPtIZrbDIrH7q4zx6da6+68QWtnaG10mzFnbL/FCo3t9Wfv7nP1rn9T1gsrxXa3Bts8CS0QxqPdgM/iCKxdeL0sdsaFVLWXyOX0m6k0y8MxeKMbCGLgYx6YPFXYdb0KOIwPp0N7yTlEYOM9tylePrmq9zpumRM9wI9654Ly+Znp03YJ69snGKa0DFyiiKPGcKow+B3KnBHHtXPUw6n7x34XMXRXs+3c0DY+GL5ASl9YuR0DLMo/MKf1qrceDbN0L2muWLDss5aE/qCP1qo9sVO1p5gfTgf0pkMELTFPPjEg/hlc7j9PWsHRmtmeksZh5r34L8iGTwtqcMBuhYzS2/TzUG5c/UdKyJ4bi1+8ro3owxXSiaWB/3dyQB/d4qrrmoz3VokUspkAbOSBn86cfaJq5hiKeGcHKD1+RzRO4BvWmH1pV5X6GjPFbM8hCsfMi2/wAQ6VADipQcGomGGxUMpCkd+1T7R5ayJ908Ef3TUMbAkg9CMGp4C0KSD724YAx36U4gyPLDheCeM1YiuAkQiiJzzkjtRNaMXPkK0i/7IyQahWzuicLBKf8AgBqtUydGaKXvy7GbEccXlD3zUw1iXyX3MSxb92ufujGKpro+pNH5gs5mHsvT8KqYdSVYFSDgg9avmkiOWLLq37QIm05bLsx9SRjFFreTrdRSruwrbsiqDOyOCcN6Zq/puqNZS+ZC4jk6fMoII/Hile+jKtbVI2LzXL64j2pG3P8AezVK0urprgLc3slvjsx25HoMjH510WmeLrFsJqdhj/prbk4/FSf5H8K27hNF1m0/0UQXKgZIX7y/UHkV0Qw8JfCzmqYypF2lEwNPjsrdY4CJIy5wbosVYZHQEArt7dfwqK/iWCbyEkLoT0MYUnPGAOR26qufemT6L9mZmsLmS3z1TOUP1FUJHurTInttycZaDoceqnjH5VTbirNExtJ8yZdiuvlwUjMa4LqTyOx5JOPxOfam3UNvc24lManLY25yBxWTPc3t84cApjgMwGQPYdB+FLbi8hb5pN6HqprPmv0N1ddRkm+3BaKR19s5FRfb3lX94u7HpUt46ouGOCaprMEGA64rK9jV+RXj+7QaRDjinHms0PqNpkgyRipMc1M0aR4wck+tDVwuV44lPLnHtVlHWM5QA47tz/Oq8kuTwPxqMMfWknbYLXNL7fcy/KszADAwvFKIpXfDzHnPO7NUonKYI7c/jUomO0A/j/n8KtO+5LVti9suIIy0d1INozgMR/WoXjkvwszTO0gBDb+Sce/41H9qaRih6Hr7ULdeRuVcZp3Ek0RyWZzgyYI9Vpn2RuzqT+VSPds55OT/ACpjTA9qTSGmyMPLbttyR7HpVmC8YEON0bqeGQ8ioJG3pjuOQaiVyq4FK9irXOkg8R3IGLjbcr/ebh/++h1/HNWl1K3uh8j7T/dbg1yIdlOQTUiz568VpGs+pjKguh0z4B6VG8oQZxk1jw3s0f3X3L6HmrCXyOMPlT61ftEyeRoS8jFwMt97sazTbyA4IrUc5GRyPWoyM1nJJs0i2j//2Q==" alt="VACCheckerService Logo"></div>
+      <span data-i18n="brand">VACCheckerService</span>
+    </a>
+    <div class="header-right">
+      <a href="index.html" class="pill-link" data-i18n="backHome">← Zur Startseite</a>
+      <div class="lang-switch">
+        <button type="button" class="active" data-lang="de">DE</button>
+        <button type="button" data-lang="en">EN</button>
+      </div>
+      <div class="live-pill"><span class="live-dot"></span> <span data-i18n="live">DATABASE ACTIVE</span></div>
+    </div>
+  </div>
+</header>
+
+<section class="page-head">
+  <div class="wrap">
+    <div class="eyebrow" data-i18n="eyebrow">BANNUMGEHUNGS-ARCHIV</div>
+    <h1 data-i18n="h1">Busted. <span class="accent">Dokumentiert. Bestätigt.</span></h1>
+    <p class="page-sub" data-i18n="sub">Jeder hier gelistete Fall wurde durch Profil-, Freundeslisten-, Gruppen- und Avatar-Analyse zweifelsfrei als Bannumgehung bestätigt. Die vollständige Indizienkette ist pro Fall einsehbar.</p>
+
+    <div class="stats-row">
+      <div class="stat"><div class="stat-num" id="statTotal">0</div><div class="stat-label" data-i18n="statTotal">Bestätigte Fälle</div></div>
+      <div class="stat"><div class="stat-num" id="statAvatar">0</div><div class="stat-label" data-i18n="statAvatar">Via Avatar-Match</div></div>
+      <div class="stat"><div class="stat-num" id="statName">0</div><div class="stat-label" data-i18n="statName">Via Namens-Match</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="controls-wrap">
+  <div class="wrap controls">
+    <input type="text" class="search-box" id="searchBox" data-i18n-placeholder="searchPlaceholder" placeholder="Suche nach Name oder Steam-ID...">
+    <button class="filter-btn active" data-filter="all" data-i18n="filterAll">Alle</button>
+    <button class="filter-btn" data-filter="avatar" data-i18n="filterAvatar">Avatar-Match</button>
+    <button class="filter-btn" data-filter="name" data-i18n="filterName">Namens-Match</button>
+  </div>
+</section>
+
+<section class="wrap">
+  <div class="case-list" id="caseList"></div>
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <div data-i18n="footerLeft">© VACCheckerService — Community Anti-Cheat Analysis</div>
+    <div style="display:flex; align-items:center; gap:18px;">
+      <a href="https://github.com/VACCheckerService/vaccheckerservice-web" target="_blank" rel="noopener" style="color:#5b6b80; text-decoration:none;">github.com/VACCheckerService/vaccheckerservice-web</a>
+      <span><span data-i18n="footerStatus">STATUS:</span> <span style="color:var(--red)">ACTIVE</span></span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const i18n = {
+    de: {
+      brand: "VACCheckerService",
+      backHome: "← Zur Startseite",
+      live: "DATABASE ACTIVE",
+      eyebrow: "BANNUMGEHUNGS-ARCHIV",
+      h1: 'Busted. <span class="accent">Dokumentiert. Bestätigt.</span>',
+      sub: "Jeder hier gelistete Fall wurde durch Profil-, Freundeslisten-, Gruppen- und Avatar-Analyse zweifelsfrei als Bannumgehung bestätigt. Die vollständige Indizienkette ist pro Fall einsehbar.",
+      statTotal: "Bestätigte Fälle",
+      statAvatar: "Via Avatar-Match",
+      statName: "Via Namens-Match",
+      searchPlaceholder: "Suche nach Name oder Steam-ID...",
+      filterAll: "Alle",
+      filterAvatar: "Avatar-Match",
+      filterName: "Namens-Match",
+      footerLeft: "© VACCheckerService — Community Anti-Cheat Analysis",
+      footerStatus: "STATUS:",
+      noResults: "Keine Treffer für diese Suche.",
+      labels: {
+        mainAccount: "Hauptaccount (aktiv genutzt)",
+        bannedAccount: "Verknüpfter Account mit VAC-Bann",
+        method: "Erkennungsmethode",
+        date: "Datum der Bestätigung",
+        chain: "Indizienkette",
+        status: "BANNUMGEHUNG BESTÄTIGT"
+      },
+      cases: [
+        {
+          caseNo: "CASE #001",
+          title: "SUSPECT_1 ↔ SUSPECT_3",
+          date: "14.03.2026",
+          method: "avatar",
+          methodLabel: "Avatar-Match",
+          mainName: "SUSPECT_1", mainId: "76561199512847360",
+          bannedName: "SUSPECT_3", bannedId: "76561199048291637",
+          chain: [
+            "Steam-Profil von SUSPECT_1 zeigt keinen VAC-Bann, aber auffällig neues Konto",
+            "SteamID.uk-Abfrage von SUSPECT_3 zeigt bestätigten VAC-Bann",
+            "Avatar-Historie beider Accounts überschneidet sich exakt an einem Stichtag",
+            "Wechsel des Profilbilds bei SUSPECT_1 fällt zeitlich mit Sperre von SUSPECT_3 zusammen"
+          ]
+        },
+        {
+          caseNo: "CASE #002",
+          title: "SAMPLE_4 ↔ SUSPECT_5",
+          date: "02.05.2026",
+          method: "name",
+          methodLabel: "Namens-Match",
+          mainName: "SAMPLE_4", mainId: "76561199267840115",
+          bannedName: "SUSPECT_5", bannedId: "76561199601528473",
+          chain: [
+            "SAMPLE_4 und ein zweiter, VAC-gebannter Account tragen identischen Anzeigenamen",
+            "SteamID.uk zeigt beide Profile als Teil desselben Account-Netzwerks",
+            "Namensendung von SUSPECT_5 stimmt mit Namensmuster von SAMPLE_4 überein",
+            "Keine plausible Erklärung für Namensgleichheit außer gemeinsamer Kontrolle"
+          ]
+        }
+      ]
+    },
+    en: {
+      brand: "VACCheckerService",
+      backHome: "← Back to home",
+      live: "DATABASE ACTIVE",
+      eyebrow: "BAN EVASION ARCHIVE",
+      h1: 'Busted. <span class="accent">Documented. Confirmed.</span>',
+      sub: "Every case listed here was confirmed as ban evasion beyond doubt through profile, friend list, group and avatar analysis. The full chain of evidence is viewable per case.",
+      statTotal: "Confirmed cases",
+      statAvatar: "Via avatar match",
+      statName: "Via name match",
+      searchPlaceholder: "Search by name or Steam ID...",
+      filterAll: "All",
+      filterAvatar: "Avatar match",
+      filterName: "Name match",
+      footerLeft: "© VACCheckerService — Community Anti-Cheat Analysis",
+      footerStatus: "STATUS:",
+      noResults: "No matches for this search.",
+      labels: {
+        mainAccount: "Main account (currently active)",
+        bannedAccount: "Linked account with VAC ban",
+        method: "Detection method",
+        date: "Date confirmed",
+        chain: "Chain of evidence",
+        status: "BAN EVASION CONFIRMED"
+      },
+      cases: [
+        {
+          caseNo: "CASE #001",
+          title: "SUSPECT_1 ↔ SUSPECT_3",
+          date: "2026-03-14",
+          method: "avatar",
+          methodLabel: "Avatar match",
+          mainName: "SUSPECT_1", mainId: "76561199512847360",
+          bannedName: "SUSPECT_3", bannedId: "76561199048291637",
+          chain: [
+            "SUSPECT_1's Steam profile shows no VAC ban but a suspiciously new account",
+            "SteamID.uk lookup for SUSPECT_3 shows a confirmed VAC ban",
+            "Avatar history of both accounts overlaps exactly on one specific date",
+            "SUSPECT_1's profile picture change coincides with SUSPECT_3's ban date"
+          ]
+        },
+        {
+          caseNo: "CASE #002",
+          title: "SAMPLE_4 ↔ SUSPECT_5",
+          date: "2026-05-02",
+          method: "name",
+          methodLabel: "Name match",
+          mainName: "SAMPLE_4", mainId: "76561199267840115",
+          bannedName: "SUSPECT_5", bannedId: "76561199601528473",
+          chain: [
+            "SAMPLE_4 and a second, VAC-banned account share an identical display name",
+            "SteamID.uk shows both profiles as part of the same account network",
+            "SUSPECT_5's name suffix matches SAMPLE_4's naming pattern",
+            "No plausible explanation for the name match other than shared control"
+          ]
+        }
+      ]
+    }
+  };
+
+  let currentLang = 'de';
+  let currentFilter = 'all';
+  let currentSearch = '';
+
+  function renderCases(){
+    const dict = i18n[currentLang];
+    const list = document.getElementById('caseList');
+    list.innerHTML = '';
+
+    const filtered = dict.cases.filter(c => {
+      const matchesFilter = currentFilter === 'all' || c.method === currentFilter;
+      const q = currentSearch.toLowerCase();
+      const matchesSearch = !q || c.mainName.toLowerCase().includes(q) || c.bannedName.toLowerCase().includes(q) || c.mainId.includes(q) || c.bannedId.includes(q);
+      return matchesFilter && matchesSearch;
+    });
+
+    document.getElementById('statTotal').textContent = dict.cases.length;
+    document.getElementById('statAvatar').textContent = dict.cases.filter(c => c.method === 'avatar').length;
+    document.getElementById('statName').textContent = dict.cases.filter(c => c.method === 'name').length;
+
+    if(filtered.length === 0){
+      list.innerHTML = `<div class="no-results">${dict.noResults}</div>`;
+      return;
+    }
+
+    filtered.forEach((c, idx) => {
+      const card = document.createElement('div');
+      card.className = 'case-card';
+      card.innerHTML = `
+        <div class="case-head">
+          <div>
+            <div class="case-id">${c.caseNo}</div>
+            <div class="case-title">${c.title}</div>
+          </div>
+          <div class="case-meta">
+            <span class="badge method-${c.method}">${c.methodLabel}</span>
+            <span class="case-date">${c.date}</span>
+            <svg class="chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+        <div class="case-body">
+          <div class="case-body-inner">
+            <div class="doc-grid">
+              <div class="doc-col">
+                <h4>${dict.labels.mainAccount}</h4>
+                <p>${c.mainName}</p>
+                <a href="https://steamcommunity.com/profiles/${c.mainId}" target="_blank" rel="noopener">steamcommunity.com/profiles/${c.mainId}</a>
+              </div>
+              <div class="doc-col">
+                <h4>${dict.labels.bannedAccount}</h4>
+                <p>${c.bannedName} 🔴</p>
+                <a href="https://steamid.uk/profile/${c.bannedId}" target="_blank" rel="noopener">steamid.uk/profile/${c.bannedId}</a>
+              </div>
+            </div>
+            <h4 style="font-family:var(--mono); font-size:11px; color:var(--muted); letter-spacing:1px; text-transform:uppercase; margin-bottom:10px;">${dict.labels.chain}</h4>
+            <ul class="evidence-chain">
+              ${c.chain.map(step => `<li>${step}</li>`).join('')}
+            </ul>
+            <div style="margin-top:16px;"><span class="badge">${dict.labels.status}</span></div>
+          </div>
+        </div>
+      `;
+      card.querySelector('.case-head').addEventListener('click', () => {
+        card.classList.toggle('open');
+      });
+      list.appendChild(card);
+    });
+  }
+
+  function applyLang(lang){
+    currentLang = lang;
+    const dict = i18n[lang];
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      if(dict[key] !== undefined) el.innerHTML = dict[key];
+    });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+      const key = el.getAttribute('data-i18n-placeholder');
+      if(dict[key] !== undefined) el.setAttribute('placeholder', dict[key]);
+    });
+    document.querySelectorAll('.lang-switch button').forEach(b => {
+      b.classList.toggle('active', b.getAttribute('data-lang') === lang);
+    });
+    document.documentElement.lang = lang;
+    renderCases();
+  }
+
+  document.querySelectorAll('.lang-switch button').forEach(btn => {
+    btn.addEventListener('click', () => applyLang(btn.getAttribute('data-lang')));
+  });
+
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentFilter = btn.getAttribute('data-filter');
+      renderCases();
+    });
+  });
+
+  document.getElementById('searchBox').addEventListener('input', (e) => {
+    currentSearch = e.target.value;
+    renderCases();
+  });
+
+  applyLang('de');
+</script>
+
+</body>
+</html>

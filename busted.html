@@ -122,6 +122,46 @@
   .doc-col a{ color:var(--blue); text-decoration:none; }
   .doc-col a:hover{ text-decoration:underline; }
 
+  .status-emoji{
+    position:relative;
+    cursor:help;
+    display:inline-block;
+  }
+  .status-emoji::after{
+    content:attr(data-tooltip);
+    position:absolute;
+    bottom:calc(100% + 8px);
+    left:50%;
+    transform:translateX(-50%) translateY(4px);
+    background:#0d1520;
+    color:var(--text);
+    font-family:var(--mono);
+    font-size:11px;
+    letter-spacing:0.3px;
+    white-space:nowrap;
+    padding:6px 10px;
+    border:1px solid var(--panel-line);
+    opacity:0;
+    pointer-events:none;
+    transition:opacity 0.15s, transform 0.15s;
+    z-index:20;
+  }
+  .status-emoji::before{
+    content:"";
+    position:absolute;
+    bottom:calc(100% + 2px);
+    left:50%;
+    transform:translateX(-50%);
+    border:5px solid transparent;
+    border-top-color:var(--panel-line);
+    opacity:0;
+    pointer-events:none;
+    transition:opacity 0.15s;
+    z-index:20;
+  }
+  .status-emoji:hover::after{ opacity:1; transform:translateX(-50%) translateY(0); }
+  .status-emoji:hover::before{ opacity:1; }
+
   .evidence-chain{ font-family:var(--mono); font-size:12.5px; color:var(--muted); border-left:2px solid var(--red); padding-left:14px; }
   .evidence-chain li{ margin-bottom:7px; list-style:none; }
   .evidence-chain li::before{ content:"→ "; color:var(--red); }
@@ -237,7 +277,7 @@ cases: [
         url: "https://steamcommunity.com/profiles/76561199084098166",
         analysisUrl: "https://steamid.uk/profile/76561199084098166",
         status: "suspicious", // 🟢 kein VAC, aber verdächtig
-        statusLabel: "Verdächtig"
+        statusLabel: "Neuer Account"
       },
       {
         role: "Verknüpfter Account",
@@ -254,7 +294,7 @@ cases: [
         url: "https://steamcommunity.com/profiles/76561198317714146",
         analysisUrl: "https://steamid.uk/profile/76561198317714146",
         status: "unknown", // ⚪ kein Ban-Status bekannt (Bindeglied)
-        statusLabel: "Unbekannt"
+        statusLabel: "Smurf"
       }
     ],
     groupUrl: "https://steamcommunity.com/groups/nuuten",
@@ -279,7 +319,7 @@ cases: [
         id: "76561198417369910",
         url: "https://steamcommunity.com/profiles/76561198417369910",
         status: "suspicious",
-        statusLabel: "Verdächtig"
+        statusLabel: "Neuer Account"
       },
       {
         role: "Verknüpfter Account",
@@ -350,7 +390,7 @@ cases: [
         url: "https://steamcommunity.com/profiles/76561199084098166",
         analysisUrl: "https://steamid.uk/profile/76561199084098166",
         status: "suspicious",
-        statusLabel: "Suspicious"
+        statusLabel: "New Account"
       },
       {
         role: "Linked account",
@@ -367,7 +407,7 @@ cases: [
         url: "https://steamcommunity.com/profiles/76561198317714146",
         analysisUrl: "https://steamid.uk/profile/76561198317714146",
         status: "unknown",
-        statusLabel: "Unknown"
+        statusLabel: "Smurf"
       }
     ],
     groupUrl: "https://steamcommunity.com/groups/nuuten",
@@ -392,7 +432,7 @@ cases: [
         id: "76561198417369910",
         url: "https://steamcommunity.com/profiles/76561198417369910",
         status: "suspicious",
-        statusLabel: "Suspicious"
+        statusLabel: "New Account"
       },
       {
         role: "Linked account",
@@ -460,7 +500,7 @@ cases: [
     const accountsHtml = c.accounts.map(a => `
       <div class="doc-col">
         <h4>${a.role}</h4>
-        <p>${a.name} ${statusEmoji[a.status] || ''}</p>
+        <p>${a.name} <span class="status-emoji" data-tooltip="${a.statusLabel || ''}">${statusEmoji[a.status] || ''}</span></p>
         <a href="${a.url}" target="_blank" rel="noopener">${a.url.replace('https://','')}</a>
         ${a.analysisUrl ? `<br><a href="${a.analysisUrl}" target="_blank" rel="noopener">${a.analysisUrl.replace('https://','')}</a>` : ''}
       </div>

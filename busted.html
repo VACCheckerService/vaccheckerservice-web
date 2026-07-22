@@ -221,39 +221,53 @@
         chain: "Indizienkette",
         status: "BANNUMGEHUNG BESTÄTIGT"
       },
-      cases: [
-       {
-          caseNo: "CASE #001",
-          title: "denik ↔ dennyE",
-          date: "22.07.2026",
-          method: "avatar",
-          methodLabel: "Avatar-Match",
-          mainName: "denik", mainId: "76561199084098166",
-          bannedName: "dennyE / dennyEm", bannedId: "76561199029211252",
-          chain: [
-            "denik und Manuellsen (76561198317714146) sind die einzigen Mitglieder der Steam-Gruppe „Nuttän“ (steamcommunity.com/groups/nuuten)",
-            "In der historischen Freundesliste von Manuellsen erscheint der Account mit VAC-Bann (steamid.uk/profile/76561198317714146)",
-            "Frühere Nicknamen „dennyE“ und „dennyEm“ zeigen eine klare Namensverwandtschaft zu „denik“",
-            "Avatar-Abgleich: Der VAC-gebannte Account verwendete am 27.02.2021 ein Profilbild (asiatischer Mönch) — dasselbe Bild erscheint am 09.06.2022 in der Avatar-Historie von „denik“",
-            "Fazit: denik umgeht einen bestehenden VAC-Bann durch Ausweichen auf einen neuen, ungesperrten Account. Verbindung über exklusive Gruppe und identische Avatare eindeutig belegt."
-          ]
-        },
-        {
-          caseNo: "CASE #002",
-          title: "gustelputsch ↔ Maxellputsch",
-          date: "22.07.2026",
-          method: "name",
-          methodLabel: "Namens-Match",
-          mainName: "gustelputsch", mainId: "76561198417369910",
-          bannedName: "gustelputsch (Account 2) / Maxellputsch", bannedId: "76561199157276802",
-          chain: [
-            "Account 1 (76561198417369910) und Account 2 (76561199157276802) tragen exakt denselben Anzeigenamen „gustelputsch“",
-            "Account 3 „Maxellputsch“ (76561199029873407) übernimmt die identische Wortendung „-putsch“",
-            "Die Profile bilden über SteamID.uk ein verifiziert zusammenhängendes Account-Netzwerk",
-            "Fazit: Ein und dieselbe Person nutzt aktuell einen sauberen Hauptaccount, obwohl zwei weitere, eindeutig zugehörige Accounts mit VAC-Bann vorliegen. Klarer Fall von Bannumgehung."
-          ]
-        }
-      ]
+     // DE
+cases: [
+  {
+    caseNo: "CASE #001",
+    title: "denik ↔ dennyE",
+    date: "22.07.2026",
+    method: "avatar",
+    methodLabel: "Avatar-Match",
+    mainName: "denik", mainId: "76561199084098166",
+    mainUrl: "https://steamcommunity.com/profiles/76561199084098166",
+    mainAnalysisUrl: "https://steamid.uk/profile/76561199084098166",
+    bannedName: "dennyE / dennyEm", bannedId: "76561199029211252",
+    bannedUrl: "https://steamcommunity.com/profiles/76561199029211252",
+    linkAccountName: "Manuellsen", linkAccountId: "76561198317714146",
+    linkAccountUrl: "https://steamcommunity.com/profiles/76561198317714146",
+    linkAccountAnalysisUrl: "https://steamid.uk/profile/76561198317714146",
+    groupUrl: "https://steamcommunity.com/groups/nuuten",
+    chain: [
+      "denik und Manuellsen (76561198317714146, https://steamcommunity.com/profiles/76561198317714146) sind die einzigen Mitglieder der Steam-Gruppe „Nuttän“ (https://steamcommunity.com/groups/nuuten)",
+      "In der historischen Freundesliste von Manuellsen erscheint der Account mit VAC-Bann (https://steamid.uk/profile/76561198317714146)",
+      "Frühere Nicknamen „dennyE“ und „dennyEm“ zeigen eine klare Namensverwandtschaft zu „denik“",
+      "Avatar-Abgleich: Der VAC-gebannte Account (https://steamcommunity.com/profiles/76561199029211252) verwendete am 27.02.2021 ein Profilbild (asiatischer Mönch) — dasselbe Bild erscheint am 09.06.2022 in der Avatar-Historie von „denik“ (https://steamid.uk/profile/76561199084098166)",
+      "Fazit: denik umgeht einen bestehenden VAC-Bann durch Ausweichen auf einen neuen, ungesperrten Account. Verbindung über exklusive Gruppe und identische Avatare eindeutig belegt."
+    ]
+  },
+  {
+    caseNo: "CASE #002",
+    title: "gustelputsch ↔ Maxellputsch",
+    date: "22.07.2026",
+    method: "name",
+    methodLabel: "Namens-Match",
+    mainName: "gustelputsch", mainId: "76561198417369910",
+    mainUrl: "https://steamcommunity.com/profiles/76561198417369910",
+    bannedName: "gustelputsch (Account 2) / Maxellputsch", bannedId: "76561199157276802",
+    bannedUrl: "https://steamcommunity.com/profiles/76561199157276802",
+    bannedAnalysisUrl: "https://steamid.uk/profile/76561199157276802",
+    account3Name: "Maxellputsch", account3Id: "76561199029873407",
+    account3Url: "https://steamcommunity.com/profiles/76561199029873407",
+    account3AnalysisUrl: "https://steamid.uk/profile/76561199029873407",
+    chain: [
+      "Account 1 (76561198417369910, https://steamcommunity.com/profiles/76561198417369910) und Account 2 (76561199157276802, https://steamcommunity.com/profiles/76561199157276802 | Analyse: https://steamid.uk/profile/76561199157276802) tragen exakt denselben Anzeigenamen „gustelputsch“",
+      "Account 3 „Maxellputsch“ (76561199029873407, https://steamcommunity.com/profiles/76561199029873407 | Analyse: https://steamid.uk/profile/76561199029873407) übernimmt die identische Wortendung „-putsch“",
+      "Die Profile bilden über SteamID.uk ein verifiziert zusammenhängendes Account-Netzwerk",
+      "Fazit: Ein und dieselbe Person nutzt aktuell einen sauberen Hauptaccount, obwohl zwei weitere, eindeutig zugehörige Accounts mit VAC-Bann vorliegen. Klarer Fall von Bannumgehung."
+    ]
+  }
+]
     },
     en: {
       brand: "VACCheckerService",
@@ -280,39 +294,53 @@
         chain: "Chain of evidence",
         status: "BAN EVASION CONFIRMED"
       },
-      cases: [
-        {
-          caseNo: "CASE #001",
-          title: "denik ↔ dennyE",
-          date: "2026-07-22",
-          method: "avatar",
-          methodLabel: "Avatar match",
-          mainName: "denik", mainId: "76561199084098166",
-          bannedName: "dennyE / dennyEm", bannedId: "76561199029211252",
-          chain: [
-            "denik and Manuellsen (76561198317714146) are the only members of the Steam group \"Nuttän\" (steamcommunity.com/groups/nuuten)",
-            "The VAC-banned account appears in Manuellsen's historical friend list (steamid.uk/profile/76561198317714146)",
-            "Former nicknames \"dennyE\" and \"dennyEm\" show a clear name relation to \"denik\"",
-            "Avatar match: the VAC-banned account used a profile picture (Asian monk) on 2021-02-27 — the same image appears on 2022-06-09 in the avatar history of \"denik\"",
-            "Conclusion: denik evades an existing VAC ban by switching to a new, unbanned account. Connection via exclusive group and identical avatars is clearly established."
-          ]
-        },
-        {
-          caseNo: "CASE #002",
-          title: "gustelputsch ↔ Maxellputsch",
-          date: "2026-07-22",
-          method: "name",
-          methodLabel: "Name match",
-          mainName: "gustelputsch", mainId: "76561198417369910",
-          bannedName: "gustelputsch (account 2) / Maxellputsch", bannedId: "76561199157276802",
-          chain: [
-            "Account 1 (76561198417369910) and account 2 (76561199157276802) share the exact same display name \"gustelputsch\"",
-            "Account 3 \"Maxellputsch\" (76561199029873407) carries the identical suffix \"-putsch\"",
-            "The profiles form a verified, connected account network via SteamID.uk",
-            "Conclusion: the same person currently uses a clean main account despite two further, clearly linked accounts holding VAC bans. Clear case of ban evasion."
-          ]
-        }
-      ]
+      // EN
+cases: [
+  {
+    caseNo: "CASE #001",
+    title: "denik ↔ dennyE",
+    date: "2026-07-22",
+    method: "avatar",
+    methodLabel: "Avatar match",
+    mainName: "denik", mainId: "76561199084098166",
+    mainUrl: "https://steamcommunity.com/profiles/76561199084098166",
+    mainAnalysisUrl: "https://steamid.uk/profile/76561199084098166",
+    bannedName: "dennyE / dennyEm", bannedId: "76561199029211252",
+    bannedUrl: "https://steamcommunity.com/profiles/76561199029211252",
+    linkAccountName: "Manuellsen", linkAccountId: "76561198317714146",
+    linkAccountUrl: "https://steamcommunity.com/profiles/76561198317714146",
+    linkAccountAnalysisUrl: "https://steamid.uk/profile/76561198317714146",
+    groupUrl: "https://steamcommunity.com/groups/nuuten",
+    chain: [
+      "denik and Manuellsen (76561198317714146, https://steamcommunity.com/profiles/76561198317714146) are the only members of the Steam group \"Nuttän\" (https://steamcommunity.com/groups/nuuten)",
+      "The VAC-banned account appears in Manuellsen's historical friend list (https://steamid.uk/profile/76561198317714146)",
+      "Former nicknames \"dennyE\" and \"dennyEm\" show a clear name relation to \"denik\"",
+      "Avatar match: the VAC-banned account (https://steamcommunity.com/profiles/76561199029211252) used a profile picture (Asian monk) on 2021-02-27 — the same image appears on 2022-06-09 in the avatar history of \"denik\" (https://steamid.uk/profile/76561199084098166)",
+      "Conclusion: denik evades an existing VAC ban by switching to a new, unbanned account. Connection via exclusive group and identical avatars is clearly established."
+    ]
+  },
+  {
+    caseNo: "CASE #002",
+    title: "gustelputsch ↔ Maxellputsch",
+    date: "2026-07-22",
+    method: "name",
+    methodLabel: "Name match",
+    mainName: "gustelputsch", mainId: "76561198417369910",
+    mainUrl: "https://steamcommunity.com/profiles/76561198417369910",
+    bannedName: "gustelputsch (account 2) / Maxellputsch", bannedId: "76561199157276802",
+    bannedUrl: "https://steamcommunity.com/profiles/76561199157276802",
+    bannedAnalysisUrl: "https://steamid.uk/profile/76561199157276802",
+    account3Name: "Maxellputsch", account3Id: "76561199029873407",
+    account3Url: "https://steamcommunity.com/profiles/76561199029873407",
+    account3AnalysisUrl: "https://steamid.uk/profile/76561199029873407",
+    chain: [
+      "Account 1 (76561198417369910, https://steamcommunity.com/profiles/76561198417369910) and account 2 (76561199157276802, https://steamcommunity.com/profiles/76561199157276802 | analysis: https://steamid.uk/profile/76561199157276802) share the exact same display name \"gustelputsch\"",
+      "Account 3 \"Maxellputsch\" (76561199029873407, https://steamcommunity.com/profiles/76561199029873407 | analysis: https://steamid.uk/profile/76561199029873407) carries the identical suffix \"-putsch\"",
+      "The profiles form a verified, connected account network via SteamID.uk",
+      "Conclusion: the same person currently uses a clean main account despite two further, clearly linked accounts holding VAC bans. Clear case of ban evasion."
+    ]
+  }
+]
     }
   };
 

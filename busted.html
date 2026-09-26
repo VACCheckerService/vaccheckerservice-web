@@ -877,7 +877,7 @@ cases: [
   });
 }
 
-  function applyLang(lang){
+  function applyLang(lang, updateUrl){
     currentLang = lang;
     const dict = i18n[lang];
     document.querySelectorAll('[data-i18n]').forEach(el => {
@@ -892,6 +892,11 @@ cases: [
       b.classList.toggle('active', b.getAttribute('data-lang') === lang);
     });
     document.documentElement.lang = lang;
+    if(updateUrl !== false){
+      const url = new URL(window.location.href);
+      url.searchParams.set('lang', lang);
+      window.history.replaceState({}, '', url);
+    }
     renderCases();
   }
 
@@ -913,7 +918,9 @@ cases: [
     renderCases();
   });
 
-  applyLang('de');
+  const initialLangParam = new URLSearchParams(window.location.search).get('lang');
+  const initialLang = (initialLangParam === 'en' || initialLangParam === 'de') ? initialLangParam : 'de';
+  applyLang(initialLang, initialLangParam !== null ? false : true);
 </script>
 
 </body>

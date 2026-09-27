@@ -131,14 +131,15 @@
     content:attr(data-tooltip);
     position:absolute;
     bottom:calc(100% + 8px);
-    left:50%;
-    transform:translateX(-50%) translateY(4px);
+    left:0;
+    transform:translateY(4px);
     background:#0d1520;
     color:var(--text);
     font-family:var(--mono);
     font-size:11px;
     letter-spacing:0.3px;
     white-space:nowrap;
+    max-width:min(70vw, 320px);
     padding:6px 10px;
     border:1px solid var(--panel-line);
     opacity:0;
@@ -150,8 +151,7 @@
     content:"";
     position:absolute;
     bottom:calc(100% + 2px);
-    left:50%;
-    transform:translateX(-50%);
+    left:6px;
     border:5px solid transparent;
     border-top-color:var(--panel-line);
     opacity:0;
@@ -159,7 +159,7 @@
     transition:opacity 0.15s;
     z-index:20;
   }
-  .status-emoji:hover::after{ opacity:1; transform:translateX(-50%) translateY(0); }
+  .status-emoji:hover::after{ opacity:1; transform:translateY(0); }
   .status-emoji:hover::before{ opacity:1; }
 
   .evidence-chain{ font-family:var(--mono); font-size:12.5px; color:var(--muted); border-left:2px solid var(--red); padding-left:14px; }
@@ -399,6 +399,14 @@ cases: [
         url: "https://www.faceit.com/de/players/GodNyuu",
         status: "vac",
         statusLabel: "FACEIT-Bann (Smurfing)"
+      },
+      {
+        role: "Verknüpfter Account (FACEIT)",
+        name: "Vyko",
+        id: "Vyko",
+        url: "https://www.faceit.com/en/players/Vyko",
+        status: "vac",
+        statusLabel: "FACEIT-Bann (Cheating)"
       }
     ],
     chain: [
@@ -409,7 +417,7 @@ cases: [
       "Alter Account „vyko5“ trägt einen VAC-Bann; die Nummerierung im Namen (vyko5) deutet auf weitere, ältere Varianten (vyko1–vyko4) hin",
       "Aktueller FACEIT-Hauptaccount „Nyu--“ selbst nicht gesperrt, da die verwendeten Cheats keinen FACEIT-Anticheat-Bypass benötigen",
       "Der Game-Ban auf Steam stammt aus einem anderen Titel (z. B. COD, Rust oder PUBG), nicht aus CS",
-      "Älterer, verknüpfter FACEIT-Account „GodNyuu“ trägt einen Bann wegen Smurfing; noch ältere Accounts derselben Kette wurden auf FACEIT wegen Cheatens gesperrt",
+      "Älterer, verknüpfter FACEIT-Account „GodNyuu“ trägt einen Bann wegen Smurfing; noch älterer, verknüpfter FACEIT-Account „Vyko“ trägt einen Bann wegen Cheatens",
       "Fazit: Nyu2602 trägt selbst einen Game-Ban, spielt aber trotzdem aktiv weiter. Zusätzlich existiert ein ganzes Netzwerk verknüpfter Alt-Accounts mit VAC- und FACEIT-Bans wegen Cheatens und Smurfings. Klares Indiz für fortgesetztes Cheaten trotz bestehender Sperren."
     ]
   },
@@ -681,6 +689,14 @@ cases: [
         url: "https://www.faceit.com/de/players/GodNyuu",
         status: "vac",
         statusLabel: "FACEIT ban (smurfing)"
+      },
+      {
+        role: "Linked account (FACEIT)",
+        name: "Vyko",
+        id: "Vyko",
+        url: "https://www.faceit.com/en/players/Vyko",
+        status: "vac",
+        statusLabel: "FACEIT ban (cheating)"
       }
     ],
     chain: [
@@ -691,7 +707,7 @@ cases: [
       "Old account \"vyko5\" carries a VAC ban; the numbering in the name (vyko5) suggests further, older variants (vyko1–vyko4)",
       "Current FACEIT main account \"Nyu--\" is not banned there itself, since the cheats used don't require a FACEIT anti-cheat bypass",
       "The game ban on Steam stems from a different title (e.g. COD, Rust, or PUBG), unrelated to CS",
-      "Older, linked FACEIT account \"GodNyuu\" carries a ban for smurfing; even older accounts in the same chain were banned on FACEIT for cheating",
+      "Older, linked FACEIT account \"GodNyuu\" carries a ban for smurfing; an even older linked FACEIT account \"Vyko\" carries a ban for cheating",
       "Conclusion: Nyu2602 himself carries a game ban but keeps playing actively regardless. An entire network of linked legacy accounts additionally carries VAC and FACEIT bans for cheating and smurfing. Clear indicator of continued cheating despite existing bans."
     ]
   },
